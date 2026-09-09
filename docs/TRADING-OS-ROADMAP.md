@@ -1,0 +1,285 @@
+# Trading OS Roadmap
+
+> **Status:** Authoritative staged roadmap for Trading OS, established at T0.
+> Stage boundaries are bounded and dependency-ordered; refinements require
+> evidence and must preserve the dependency logic. Terminology follows
+> [`TRADING-OS-PRODUCT-CONSTITUTION.md`](TRADING-OS-PRODUCT-CONSTITUTION.md).
+
+## 0. Roadmap shape
+
+Each stage is bounded: it has defined inputs, a small number of product
+decisions, acceptance evidence, and explicit exclusions. Later stages never
+silently redefine earlier ones. The dependency spine:
+
+```text
+T0 foundation ──▶ T1 shell + surface proof ──▶ T2 method/capability model
+   ──▶ T3 deterministic data + evaluation ──▶ T4 backtest + replay
+   ──▶ T5 evidence + review ──▶ T6 Live Watch ──▶ T7 Assisted Live
+   ──▶ T8 AI-assisted investigation
+```
+
+Modes arrive in evidence order: first with synthetic data (T1–T2), then
+deterministic historical data (T3–T4), then recorded evidence (T5), then the
+current market without orders (T6), then the current market with human-
+authorized orders (T7). AI arrives last, governed, after the evidence spine it
+is supposed to investigate actually exists.
+
+Standing rules for every stage:
+
+- The Method-flexibility proof (§2) applies from T2 onward.
+- No stage claims an untested surface capability as production-ready.
+- VICT is consumed at the pinned release-set identity; upgrades are explicit
+  re-verification events.
+- Every stage ends with updated documents and a clean, reviewed commit.
+
+## Stage map
+
+| Stage | Name | Core question answered |
+| --- | --- | --- |
+| T0 | Product and Surface Foundation | What is the product, what does VICT actually give us, and how is the platform shaped? |
+| T1 | Platform Shell and Trading-Surface Proof | Does a real consumer app on public VICT packages give us a professional shell and one credible custom market surface? |
+| T2 | Method and Capability Foundation | Can methods be defined, versioned, cloned, and compared with capabilities composed — no application code? |
+| T3 | Deterministic Market Data and Evaluation | Is there one canonical, deterministic evaluation core over stored historical data? |
+| T4 | Backtest and Blind Replay | Do Backtest and Replay produce identical-behavior, future-fenced evidence? |
+| T5 | Evidence and Trader Review | Does the Journal/Evidence spine make every opportunity and decision reviewable? |
+| T6 | Live Watch | Can the method observe the current market and record opportunities without orders? |
+| T7 | Assisted Live | Can the trader operate for real with retained authority and full records? |
+| T8 | AI-Assisted Investigation | Can AI investigate evidence and propose hypotheses without inventing signals? |
+
+---
+
+## T0 — Product and Surface Foundation (this stage)
+
+**Delivered:** README, Product Constitution, Surface Architecture, VICT
+Consumer-Fit Audit, this roadmap. No code, no dependencies, no mockups.
+
+**Exit:** documents committed and reviewed; framework facts cited with
+repository evidence; product decisions separated from framework facts.
+
+---
+
+## T1 — Platform Shell and Trading-Surface Proof
+
+**Purpose.** Prove the consumer pattern and the platform shell with a narrow,
+honest vertical — before any method engine exists.
+
+**Scope.**
+
+1. A **separate consumer application** installed from exact public VICT
+   packages (`@victframework/*@0.1.0`, release set `vict-release-set@1/0.1.0`),
+   scaffolded with `@victframework/scaffolder`, lockfile-integrity verified.
+2. A **professional platform shell**: neutral Application Definition
+   (`vict.application@2`) with the T0 information architecture — top-level
+   Desk and Markets entries plus the Research, Practice, Operate, Review and
+   System navigation groups — the program/account/mode context strip, command
+   palette, and data-health indicator as shell islands (versioned custom
+   surfaces).
+3. **Structured VICT routes/layouts/state**: navigation groups, screens,
+   regions, declared safe states, theme tokens.
+4. **One registered custom market surface** (`trading.market-chart@1`):
+   candlestick + volume rendered from **synthetic/fixture market data**,
+   with shared cursor within the surface and explicit stale/empty states.
+5. **Persistent workspace configuration**: workspace panel layouts saved as
+   typed application-domain resources and restored across restart.
+
+**Explicit exclusions.** No broker connection, no real trading, no real
+market data provider, no method engine, no strategy-specific shell (a fixture
+method may exercise the surface only as data — it appears nowhere in
+navigation or shell vocabulary).
+
+**Acceptance criteria.**
+
+- Fresh clone → install (exact versions from public registry) → build → run,
+  with lockfile integrity recorded; no monorepo leakage.
+- Shell renders from one Application Definition; adding a route/screen
+  requires definition change only.
+- `trading.market-chart@1` renders fixture candles; unknown/unregistered
+  component revisions fail with structured diagnostics.
+- Saved workspace layout survives a real restart; safe states demonstrable
+  (loading, empty, stale, failure).
+- Renderer and data-adapter conformance suites pass in-repo.
+- No strategy vocabulary in the shell; `git diff --check` clean.
+
+---
+
+## T2 — Method and Capability Foundation
+
+**Purpose.** Make methods first-class, versioned, and composable.
+
+**Scope.** Method/Method Version model in `packages/trading-domain` (inputs,
+analysis layers, rules, judgment questions, risk requirements, execution
+assumptions, Workspace Profile, lineage, deterministic identity); capability
+packs in `packages/trading-capabilities` (first reusable indicators, session
+calculations, detectors); authoring surfaces composed from VICT forms/tabs/
+dialogs; clone/compare/version flows; capability discovery and configuration
+surface.
+
+**Flexibility proof introduced here:** the two contrasting method fixtures
+(§2) must compose **definition-only** — the first gate of the flexibility
+proof.
+
+**Exclusions.** No real or synthetic time-series evaluation yet; no mode
+orchestration.
+
+**Acceptance.** Two contrasting fixture methods defined with zero shell
+changes; version lineage and comparison demonstrable; capability packs install
+atomically with pinned revisions.
+
+---
+
+## T3 — Deterministic Market Data and Evaluation
+
+**Purpose.** One canonical evaluation core over deterministic stored data.
+
+**Scope.** `packages/trading-data`: bar store, ingestion adapters (fixtures
+first), bar schema and migrations, data health model. `packages/trading-
+capabilities`: the canonical evaluation core invoked by all four modes,
+deterministic and identity-pinned (method version + capability revisions in
+the run identity). Performance calculation capabilities.
+
+**Exclusions.** No live provider, no broker, no interactive sessions yet.
+
+**Acceptance.** Same method version + same data range + same capability
+revisions ⇒ byte-identical evaluation outputs across repeated runs; bars
+store survives restart; data health states truthful.
+
+---
+
+## T4 — Backtest and Blind Replay
+
+**Purpose.** The first two operating modes end-to-end.
+
+**Scope.** Backtest runs as governed durable runs (accelerated, simulated
+fills); blind Replay with product-local replay clock and future-data fencing;
+replay surface (clock controls, hidden future); opportunity/decision records
+from both modes; risk-constitution evaluation in the loop.
+
+**Exclusions.** No current-market data, no Live Watch, no AI.
+
+**Acceptance.** Replay never exposes post-clock data (fencing evidence);
+backtest and replay produce the same opportunity schema; simulated fills are
+labeled simulated; risk vetoes recorded.
+
+---
+
+## T5 — Evidence and Trader Review
+
+**Purpose.** The review spine: every opportunity and decision reviewable.
+
+**Scope.** Journal and Evidence surfaces over recorded opportunities,
+decisions, runs, and sessions; per-Method-Version performance, equity/
+drawdown/distribution views; evidence lineage (mode, method version,
+capability revisions, data range); export of evidence records.
+
+**Acceptance.** A method version's full evidence chain is reconstructable from
+records alone; comparison surfaces show structural and performance deltas
+between versions.
+
+---
+
+## T6 — Live Watch
+
+**Purpose.** The method observes the current market; nothing is ordered.
+
+**Scope.** Live data ingestion for watch-mode instruments; background
+observation loops as governed durable runs; Live Watch monitor surface;
+potential-opportunity records; data-freshness/stale behavior under live
+conditions; **decision on GAP-CANDIDATE-1** (subscription data binding):
+either the polling composition is confirmed adequate or a framework proposal
+is written with evidence.
+
+**Exclusions.** No broker orders of any kind; no Assisted Live surfaces.
+
+**Acceptance.** Live Watch runs survive restart; observation evidence records
+continuously; zero broker connectivity exists in the codebase path.
+
+---
+
+## T7 — Assisted Live
+
+**Purpose.** Real-market operation with human authority.
+
+**Scope.** Assisted-live desk surfaces; ticket composition (market context +
+method output + risk evaluation) with explicit trader confirmation; broker
+adapter behind a typed, human-gated boundary; full decision records; risk
+constitution enforcement and recorded overrides.
+
+**Exclusions.** No autonomous execution — ever. No AI authority.
+
+**Acceptance.** No code path can place a broker order without an explicit
+human confirmation event; every order links to its opportunity, method
+version, and risk evaluation; restart recovery preserves the live session
+state truthfully.
+
+---
+
+## T8 — AI-Assisted Investigation
+
+**Purpose.** AI investigates evidence and proposes hypotheses — never signals.
+
+**Scope.** VICT ProductAgent boundary + governed tool bridge + `vict.agent-
+stream@1` (Stage 06 Verified) composed via the Mastra adapter; investigation
+agents read evidence stores through governed capability tools; hypotheses are
+recorded as proposals requiring human acceptance; no rule override, no signal
+invention, no autonomous execution.
+
+**Acceptance.** Every AI output is attributable, recorded, and cannot reach
+broker or rule paths; evidence produced by AI is labeled as such.
+
+---
+
+## 1. Stage boundary rules
+
+- A stage may begin only when its dependencies are accepted (not merely
+  implemented): e.g. T3 evaluation depends on T2's versioned methods; T4 modes
+  depend on T3's canonical core; T7 depends on T6's live data path.
+- A stage may refine an earlier boundary only with recorded evidence; the
+  dependency logic and mode definitions (Constitution §4) may not be relaxed.
+- Stages do not claim later-stage behavior. Live Watch (T6) makes no order
+  claims; Assisted Live (T7) makes no AI claims.
+
+## 2. The method-flexibility proof
+
+Governing condition:
+
+> A second method with a substantially different structure can be added
+> without modifying the application shell, the VICT renderer, or existing
+> general surfaces.
+
+### Fixtures (architecture probes, not strategy endorsements)
+
+- **M1 — multi-timeframe method.** A method with monthly/weekly directional
+  analysis plus lower-timeframe setup/entry analysis, several indicators, and
+  session timing — the maximal-composition probe.
+- **M2 — structurally different method.** A single-timeframe, single-instrument
+  method with different observation counts and layer composition (e.g. an
+  event/day-boundary method with no indicator layers) — the minimal-composition
+  probe.
+
+### Permitted change classes when adding a method
+
+| Change class | Status when adding a fixture method |
+| --- | --- |
+| **Definition only** (new Method Version + Workspace Profile + existing capabilities) | **Expected common case** — must succeed for M1 and M2 |
+| **New reusable capability** | Allowed when the method needs a genuinely new calculation; the new capability becomes reusable by any compatible method |
+| **New versioned custom surface** | Allowed only when the method needs a genuinely new *interaction*; recorded with justification |
+| **Core framework change** | Prohibited without an evidence-backed, recorded gap decision; VICT changes are proposed upstream, never self-applied |
+
+### How it is tested
+
+At T2 (definition-only gate), and re-run whenever the method model evolves:
+add M1 and M2 in the consumer app and demonstrate (1) zero diff to the shell
+definition, renderer, or existing general surfaces; (2) method identity
+changes only where the method changed; (3) workspaces from Workspace Profiles
+open for both methods without special-case code. The probe's result is
+recorded in each affected stage's acceptance evidence.
+
+## 3. Risk register (roadmap-level)
+
+| Risk | Mitigation |
+| --- | --- |
+| Island/props data-flow pattern proves awkward under SSR | T1 acceptance criteria exercise it first |
+| Live Watch needs push data binding | Deferred decision at T6 with evidence; framework proposal path defined |
+| Scope creep toward a universal DSL | Constitution §9 prohibits it; T2 rule-composition scope is bounded |
+| Evidence schema churn across stages | Opportunity/decision/evidence schemas versioned from T4 with migrations |
+| Premature production claims | Standing rule: no untested surface is called production-ready |
