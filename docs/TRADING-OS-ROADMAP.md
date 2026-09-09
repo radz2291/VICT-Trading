@@ -31,6 +31,10 @@ Standing rules for every stage:
 - VICT is consumed at the pinned release-set identity; upgrades are explicit
   re-verification events.
 - Every stage ends with updated documents and a clean, reviewed commit.
+- The T1 gate carries an external VICT dependency (GAP-CANDIDATE-2, audit
+  §6): T1 does not begin until a released VICT version supplies declared
+  navigation-group ordering, or the product explicitly re-scopes with a
+  recorded decision.
 
 ## Stage map
 
@@ -51,7 +55,8 @@ Standing rules for every stage:
 ## T0 — Product and Surface Foundation (this stage)
 
 **Delivered:** README, Product Constitution, Surface Architecture, VICT
-Consumer-Fit Audit, this roadmap. No code, no dependencies, no mockups.
+Consumer-Fit Audit, the T0 independent-review reconciliation record, this
+roadmap. No code, no dependencies, no mockups.
 
 **Exit:** documents committed and reviewed; framework facts cited with
 repository evidence; product decisions separated from framework facts.
@@ -68,12 +73,21 @@ honest vertical — before any method engine exists.
 1. A **separate consumer application** installed from exact public VICT
    packages (`@victframework/*@0.1.0`, release set `vict-release-set@1/0.1.0`),
    scaffolded with `@victframework/scaffolder`, lockfile-integrity verified.
-2. A **professional platform shell**: neutral Application Definition
-   (`vict.application@2`) with the T0 information architecture — top-level
-   Desk and Markets entries plus the Research, Practice, Operate, Review and
-   System navigation groups — the program/account/mode context strip, command
-   palette, and data-health indicator as shell islands (versioned custom
-   surfaces).
+2. A **professional platform shell**: a product-owned `TradingShell`
+   composition root in `apps/trading-os` — context strip (active
+   program/account/workspace context and its mode), command palette,
+   data-health indicator, and background-operations indicator — composed
+   around the canonical public VICT renderer (`VitApp`), which renders the
+   neutral Application Definition (`vict.application@2`): top-level Desk
+   and Markets entries plus the Research, Practice, Operate, Review and
+   System navigation groups, screens, regions, and safe states, entirely
+   from the definition. Shell chrome components are product components
+   bound to product-owned state and services; VICT renders all navigation
+   and screen content. **Entry gate:** T1 does not begin until a released
+   VICT version supplies declared navigation-group ordering
+   (GAP-CANDIDATE-2) — within-group order alone cannot render the group
+   sequence — unless a recorded decision explicitly accepts VICT's
+   alphabetical group order and withdraws the central-loop-order claim.
 3. **Structured VICT routes/layouts/state**: navigation groups, screens,
    regions, declared safe states, theme tokens.
 4. **One registered custom market surface** (`trading.market-chart@1`):
@@ -108,11 +122,15 @@ navigation or shell vocabulary).
 
 **Scope.** Method/Method Version model in `packages/trading-domain` (inputs,
 analysis layers, rules, judgment questions, risk requirements, execution
-assumptions, Workspace Profile, lineage, deterministic identity); capability
-packs in `packages/trading-capabilities` (first reusable indicators, session
-calculations, detectors); authoring surfaces composed from VICT forms/tabs/
-dialogs; clone/compare/version flows; capability discovery and configuration
-surface.
+assumptions, observation requirements, lineage, deterministic identity);
+independently versioned Workspace Profiles referencing compatible Method
+Versions; capability packs in `packages/trading-capabilities` (first reusable
+indicators, session calculations, detectors — pure product-local computation,
+registered and revision-pinned, with governed capability boundaries wrapping
+jobs, not individual calculations; audit §6.1); authoring surfaces composed
+from VICT forms/tabs/dialogs; clone/compare/version flows; capability
+discovery and configuration surface (product composition over pack
+metadata).
 
 **Flexibility proof introduced here:** the two contrasting method fixtures
 (§2) must compose **definition-only** — the first gate of the flexibility
@@ -132,10 +150,17 @@ atomically with pinned revisions.
 **Purpose.** One canonical evaluation core over deterministic stored data.
 
 **Scope.** `packages/trading-data`: bar store, ingestion adapters (fixtures
-first), bar schema and migrations, data health model. `packages/trading-
-capabilities`: the canonical evaluation core invoked by all four modes,
-deterministic and identity-pinned (method version + capability revisions in
-the run identity). Performance calculation capabilities.
+first), bar schema and migrations, data health model (implements the
+market-data port owned by `trading-domain`; bound at the composition root).
+`packages/trading-capabilities`: the canonical evaluation core invoked by
+all four modes — a pure, deterministic, in-process computation layer
+(indicators, rules, bar-by-bar execution; independently unit-testable; no
+per-candle framework persistence or authorization overhead) wrapped by
+coarse governed VICT capability job boundaries (start evaluation, ingest a
+bounded dataset, persist evidence), identity-pinned (method version +
+calculation revisions + governed capability revisions in the run identity).
+Performance calculation capabilities. No performance claims without
+measurement.
 
 **Exclusions.** No live provider, no broker, no interactive sessions yet.
 
@@ -151,14 +176,16 @@ store survives restart; data health states truthful.
 
 **Scope.** Backtest runs as governed durable runs (accelerated, simulated
 fills); blind Replay with product-local replay clock and future-data fencing;
-replay surface (clock controls, hidden future); opportunity/decision records
-from both modes; risk-constitution evaluation in the loop.
+replay surface (clock controls, hidden future); opportunity records from
+both modes — decisions recorded only where a human decided (Backtest records
+none); risk-constitution evaluation in the loop.
 
 **Exclusions.** No current-market data, no Live Watch, no AI.
 
 **Acceptance.** Replay never exposes post-clock data (fencing evidence);
-backtest and replay produce the same opportunity schema; simulated fills are
-labeled simulated; risk vetoes recorded.
+backtest and replay produce the same opportunity record schema (decisions
+recorded only where a human decided); simulated fills are labeled simulated;
+risk vetoes recorded.
 
 ---
 
@@ -183,7 +210,7 @@ between versions.
 
 **Scope.** Live data ingestion for watch-mode instruments; background
 observation loops as governed durable runs; Live Watch monitor surface;
-potential-opportunity records; data-freshness/stale behavior under live
+opportunity records; data-freshness/stale behavior under live
 conditions; **decision on GAP-CANDIDATE-1** (subscription data binding):
 either the polling composition is confirmed adequate or a framework proposal
 is written with evidence.
@@ -202,7 +229,9 @@ continuously; zero broker connectivity exists in the codebase path.
 **Scope.** Assisted-live desk surfaces; ticket composition (market context +
 method output + risk evaluation) with explicit trader confirmation; broker
 adapter behind a typed, human-gated boundary; full decision records; risk
-constitution enforcement and recorded overrides.
+constitution enforcement (hard limits cannot be executed through; soft-limit
+acknowledgments recorded; constitution changes are deliberate and
+versioned).
 
 **Exclusions.** No autonomous execution — ever. No AI authority.
 
@@ -260,7 +289,8 @@ Governing condition:
 
 | Change class | Status when adding a fixture method |
 | --- | --- |
-| **Definition only** (new Method Version + Workspace Profile + existing capabilities) | **Expected common case** — must succeed for M1 and M2 |
+| **Definition only** (new Method Version + existing capabilities) | **Expected common case** — must succeed for M1 and M2 |
+| **Workspace Profile revision** (presentation-only change to an existing method's profile) | Expected to succeed **without** a new Method Version — profiles are independently versioned (Constitution §5) |
 | **New reusable capability** | Allowed when the method needs a genuinely new calculation; the new capability becomes reusable by any compatible method |
 | **New versioned custom surface** | Allowed only when the method needs a genuinely new *interaction*; recorded with justification |
 | **Core framework change** | Prohibited without an evidence-backed, recorded gap decision; VICT changes are proposed upstream, never self-applied |
@@ -270,9 +300,10 @@ Governing condition:
 At T2 (definition-only gate), and re-run whenever the method model evolves:
 add M1 and M2 in the consumer app and demonstrate (1) zero diff to the shell
 definition, renderer, or existing general surfaces; (2) method identity
-changes only where the method changed; (3) workspaces from Workspace Profiles
-open for both methods without special-case code. The probe's result is
-recorded in each affected stage's acceptance evidence.
+changes only where trading semantics changed — a Workspace-Profile-only
+change never creates a new Method Version; (3) workspaces from Workspace
+Profiles open for both methods without special-case code. The probe's result
+is recorded in each affected stage's acceptance evidence.
 
 ## 3. Risk register (roadmap-level)
 
@@ -282,4 +313,5 @@ recorded in each affected stage's acceptance evidence.
 | Live Watch needs push data binding | Deferred decision at T6 with evidence; framework proposal path defined |
 | Scope creep toward a universal DSL | Constitution §9 prohibits it; T2 rule-composition scope is bounded |
 | Evidence schema churn across stages | Opportunity/decision/evidence schemas versioned from T4 with migrations |
+| Upstream VICT dependency blocks T1 (GAP-CANDIDATE-2, navigation-group ordering) | T1 entry gate enforced; explicit recorded fallback decision required to proceed otherwise |
 | Premature production claims | Standing rule: no untested surface is called production-ready |

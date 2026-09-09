@@ -15,9 +15,9 @@ reaches past another:
 
 | Layer | Owns | Never owns |
 | --- | --- | --- |
-| **Platform shell** | Global navigation, program/account context, data health, operating modes, commands, alerts, persistent application state | Any method's vocabulary, chart internals, workspace contents |
+| **Platform shell** | Global navigation frame, program/account context, data health, workspace context, background operations, commands, alerts, persistent application state | Any method's vocabulary, chart internals, workspace contents |
 | **Workspace** | The trader's arrangement of panels, charts, tools, and saved layouts | Method logic, capability behavior, shell state |
-| **Method definition** | Rules, inputs, observations, judgment questions, risk requirements, execution assumptions, compatibility, Workspace Profile, immutable version lineage | Svelte/renderer implementation, exact UI arrangement |
+| **Method definition** | Rules, inputs, observations, judgment questions, risk requirements, execution assumptions, compatibility, observation requirements, immutable version lineage | Svelte/renderer implementation, exact UI arrangement |
 | **Capability** | Reusable domain behavior: indicators, structure, detectors, sessions, replay, fills, sizing, ingestion, performance | Presentation, navigation, persistence policy |
 | **Surface** | Presentation and interaction for a region of screen | Domain rules, method logic, authorization |
 
@@ -31,25 +31,49 @@ shell never imports a method; a method never imports a surface.
 The shell is the persistent frame around every screen. It owns:
 
 - **Program and account context** — which Trading Program and account are
-  active, with a visible mode indicator (Backtest / Replay / Live Watch /
-  Assisted Live) and simulated/real account marking.
+  active, with simulated/real account marking.
+- **Workspace and activity context** — the shell shows the operating mode
+  (Backtest / Replay / Live Watch / Assisted Live) of the workspace/activity
+  the trader currently has in context. The mode belongs to the activity or
+  run, not to the shell (Constitution §4); the shell displays it, it does
+  not own it.
+- **Background operations** — durable runs (a Live Watch run, a backtest
+  job, a replay session) continue independently of navigation. The shell
+  shows all active operations and their status, so opening Journal or
+  Evidence never stops or redefines a running watch, and every screen can
+  truthfully state which operating conditions it is showing.
 - **Data health** — freshness, source, and completeness of every market data
   feed in view, surfaced globally and per panel.
-- **Operating mode context** — the mode is part of the shell context, so every
-  screen can truthfully state which operating conditions it is showing.
 - **Commands and actions** — one consistent command/action model (command
   palette + explicit action surfaces) across all screens.
 - **Alerts** — program-level and data-level alerts (stale feed, risk limit
   approached, session boundary).
-- **Persistent application state** — active program, active mode, open
-  workspace, and layout survive restart.
+- **Persistent application state** — active program, open workspace context,
+  and layout survive restart; active background operations are durable runs
+  that survive restart on their own.
 
-The shell is implemented as the VICT application shell: neutral routes,
-navigation groups, screens, and layout regions from an Application Definition,
-plus a small set of product-local shell components (context strip, command
-palette, data-health indicator) registered as versioned custom surfaces. The
-shell contains no strategy vocabulary, no instrument symbols, no timeframe
-hierarchy, and no indicator names.
+Implementation (corrected against verified VICT `0.1.0` facts): the shell is
+a **product-owned composition root** — a `TradingShell` component in
+`apps/trading-os` that renders the global chrome (context strip, command
+palette, data-health indicator, background-operations indicator) around the
+canonical public VICT renderer (`VitApp` from
+`@victframework/renderer-svelte`), which keeps generating navigation,
+screens, regions, and safe states from the neutral Application Definition.
+This composition is forced by verified framework facts: the
+`ApplicationDefinition` carries routes and screens but **no application-wide
+shell regions or global surface slots**; the canonical renderer itself owns
+the header, navigation, and main-content structure; custom component
+surfaces exist only inside screen layouts (or nested screen surfaces) and
+receive only their declared bounded primitive props (audit §2, §5). There is
+no VICT mechanism to register a component into the persistent frame, so
+persistent shell chrome is product-owned composition, not VICT component
+surfaces. Product global state and services reach the chrome and the custom
+trading surfaces through product-owned composition surfaces (Svelte context
+from the shell, registration-time service closure in the author-owned
+registry) — public composition only: no copied or forked renderer internals,
+no DOM manipulation, no CSS hiding, no duplicated per-screen shell
+components. The shell contains no strategy vocabulary, no instrument
+symbols, no timeframe hierarchy, and no indicator names.
 
 ## 3. Information architecture
 
@@ -64,14 +88,24 @@ User-facing navigation (VICT navigation groups), hiding framework terminology:
 | **Practice** | **Replay** | Blind-replay practice sessions over historical data |
 | **Operate** | **Live Watch** | Background method observation of the current market |
 | **Operate** | **Trading** | Assisted-live desk; every order requires explicit trader confirmation |
-| **Review** | **Journal** | Opportunities and decisions: taken, rejected, modified, missed |
+| **Review** | **Journal** | Opportunities, decisions (taken / rejected / modified), and unacted opportunities |
 | **Review** | **Evidence** | Per-Method-Version performance, equity/drawdown/distribution, evidence lineage |
 | **System** | **Risk** | The Risk Constitution: capital, limits, sessions, overrides |
 | **System** | **Settings** | Data sources, integrations, recovery, program administration |
 
 Movement path: **Research → Practice (Backtest, Replay) → Operate (Live
-Watch, Trading) → Review (Journal, Evidence)** — the product's central loop,
-kept legible in navigation order.
+Watch, Trading) → Review (Journal, Evidence)** — the product's central loop.
+Honest VICT `0.1.0` fact: `ApplicationRoute.nav.order` orders routes only
+*within* a navigation group, and the canonical renderer sorts navigation
+groups alphabetically by group name (audit §2, §5) — so this loop order
+cannot currently be expressed in the rendered navigation. Declared
+navigation-group ordering is a genuine upstream VICT dependency
+(GAP-CANDIDATE-2, audit §6), and T1 remains blocked until a separately
+released and verified VICT version supplies it. Until then no document may
+claim the loop is "legible in navigation order", and no ordering workaround
+is permitted — no numeric prefixes, no label encoding, no post-render DOM
+rearrangement, and no product-rendered duplicate of VICT's navigation
+coupled to renderer-internal CSS structure.
 
 Naming rules: primary navigation exposes product concepts only ("Methods",
 "Journal", "Evidence"), never framework terms ("Application Plan",
@@ -80,41 +114,50 @@ Breakout" anywhere in the shell).
 
 ## 4. Workspace model
 
-A **Workspace** is the trader-owned arrangement of panels for a mode:
-market charts, lower indicator panels, opportunity lists, tickets, evidence
-tables, notes. Workspaces are:
+A **Workspace Instance** is the trader-owned arrangement of panels for a
+working context: market charts, lower indicator panels, opportunity lists,
+tickets, evidence tables, notes. Workspace Instances are:
 
 - **User-owned.** Created, renamed, duplicated, and deleted by the trader.
 - **Saved and restored.** Layout identity and panel configuration persist in
   application-domain storage and survive restart.
 - **Multi-instance.** The trader keeps several workspaces (e.g. a replay
   practice desk, a Live Watch monitor) and switches between them; the shell
-  remembers the open workspace per mode.
+  remembers the open workspace per context.
 - **Method-agnostic at runtime.** A workspace never depends on a method.
 
 ### Workspace Profile
 
-A **Workspace Profile** is a versioned recommendation declared by a Method
-Version: which information the method needs on screen (e.g. "a primary chart
-of instrument X at timeframe Y with indicator Z below"). The profile is:
+A **Workspace Profile** is an independently versioned presentation
+recommendation that references a compatible Method Version (or its
+observation requirements): which information the method needs on screen
+(e.g. "a primary chart of instrument X at timeframe Y with indicator Z
+below"). The profile is:
 
 - a **recommendation**, not a command: the trader accepts, modifies, or
   rejects it when opening a workspace for a method;
-- **versioned with the method** — a changed profile is a new Method Version
-  component, so behavior never changes silently;
+- **independently versioned** — it evolves (better default layouts, panel
+  sizes, arrangements) without creating a new Method Version, because it
+  changes no trading semantics; it declares which Method Versions or
+  observation requirements it is compatible with;
 - **declared, not arranged** — the profile names panels, instruments,
   timeframes, and capability-backed indicators; the workspace instance owns
   the actual arrangement, sizes, and screen positions.
 
-This keeps the method's information requirements explicit while the UI stays
-the trader's property. A Workspace Profile is data; rendering it is a normal
+The identity boundary (Constitution §5): **method observation requirements**
+— the information genuinely required by the method's behavior — are pinned
+within the Method Version; the **Workspace Profile** is presentation and may
+evolve freely; the **Workspace Instance** is the trader's property. A visual
+arrangement, panel size, or improved default layout never creates a new unit
+of trading proof. A Workspace Profile is data; rendering it is a normal
 workspace-open flow, not a special application page.
 
 ## 5. Method / workspace separation
 
 - A Method Version **declares** what it needs to see (compatibility
-  requirements + Workspace Profile). It cannot open screens, arrange panels,
-  or alter shell navigation.
+  requirements + observation requirements; its Workspace Profile
+  recommends it). It cannot open screens, arrange panels, or alter shell
+  navigation.
 - A Workspace **renders** what the trader arranged. It can display any
   method's outputs because panels bind to capability-backed data, not to
   method internals.
@@ -190,9 +233,16 @@ product-local services owned by the data layer; records and evidence always
 cross the typed VICT data/capability boundaries.
 
 Method evaluation is uniform across modes: Backtest, Replay, Live Watch, and
-Assisted Live invoke the same canonical evaluation core through governed
-capability runs; each mode wraps it with its own clock, data window, and
-authority rules, declared per Method Version.
+Assisted Live invoke the same canonical evaluation core; each mode wraps it
+with its own clock, data window, and authority rules, declared per Method
+Version. The evaluation has two deliberate levels (Constitution §5;
+audit §6.1): bar-by-bar computation — indicators, rules, method execution —
+runs as pure, deterministic, in-process product code with no per-candle
+framework persistence or authorization overhead; the surrounding job —
+starting a backtest, running an evaluation, ingesting a bounded dataset,
+persisting an evidence result — is the governed VICT capability boundary.
+VICT governs jobs and consequential effects, not every mathematical call
+inside a job.
 
 ## 9. Persistence
 
@@ -239,7 +289,8 @@ Versioning rules:
   application identity.
 - Method Versions pin capability revisions; capability revisions never change
   silently under a Method Version.
-- Workspace Profiles are versioned with their Method Version.
+- Workspace Profiles are independently versioned and declare Method Version
+  compatibility; a profile change never creates a new Method Version.
 - Unsupported surface roles or unresolved components fail with structured
   diagnostics — never silent omission.
 

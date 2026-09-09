@@ -15,12 +15,13 @@ generic dashboard, and not an autonomous trading bot.
 **T0 — Product and Surface Foundation** (documentation only). Application
 implementation has not begun. This stage establishes the authoritative product
 architecture, surface architecture, VICT capability-fit evidence, and the
-staged roadmap.
+staged roadmap. An independent review of the T0 direction has been reconciled
+into these documents; findings, dispositions, and the current T0/T1 verdict
+are recorded in the reconciliation record below.
 
 ## Relationship to VICT
 
-Trading OS is a **separate consumer product repository** — the second external
-consumer of the released VICT framework (after Quellight). It consumes the
+Trading OS is a **separate consumer product repository**. It consumes the
 exact published public release set:
 
 ```text
@@ -41,7 +42,7 @@ one-way: VICT never depends on any Trading OS package.
 | Fundamental unit of proof | A **Method Version** (immutable, versioned method definition) |
 | Governing object | The **Trading Program** (accounts, capital, risk, methods, sessions, evidence) |
 | Human authority | Retained. Autonomous broker execution is out of scope |
-| First user | A single professional trader (personal-first, clean domain boundaries) |
+| First user | A single owner-operator trader (personal-first, clean domain boundaries) |
 | First real method | SS Breakout (an eventual method — never the platform's architecture) |
 
 ## Current non-goals
@@ -62,3 +63,4 @@ one-way: VICT never depends on any Trading OS package.
 | [`docs/architecture/TRADING-OS-SURFACE-ARCHITECTURE.md`](docs/architecture/TRADING-OS-SURFACE-ARCHITECTURE.md) | Platform shell, information architecture, workspace model, capability/surface separation, data and action flow, persistence, extension and versioning model |
 | [`docs/audit/VICT-TRADING-CONSUMER-FIT.md`](docs/audit/VICT-TRADING-CONSUMER-FIT.md) | Repository-grounded VICT capability-fit audit with exact evidence, confirmed limitations, and recommendations |
 | [`docs/TRADING-OS-ROADMAP.md`](docs/TRADING-OS-ROADMAP.md) | Staged roadmap T0–T8 with stage boundaries, dependencies, and the method-flexibility proof |
+| [`docs/audit/TRADING-OS-T0-INDEPENDENT-REVIEW-RECONCILIATION.md`](docs/audit/TRADING-OS-T0-INDEPENDENT-REVIEW-RECONCILIATION.md) | Independent T0 review reconciliation: findings F-1–F-10, evidence, dispositions, and the T0/T1 verdict |
