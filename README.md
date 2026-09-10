@@ -12,21 +12,24 @@ generic dashboard, and not an autonomous trading bot.
 
 ## Current stage
 
-**T1 — Platform Shell and Trading-Surface Proof (implemented;
-independently verified at `279fb29`; closure remediation applied; formal
-closure pending focused independent re-verification of that remediation)**.
-The product now has a real, locally runnable VICT consumer application: a
-product-owned TradingShell, the canonical Application Definition
-(Desk/Markets plus Research → Practice → Operate → Review → System
-navigation), a Markets workspace with a registered `trading.market-chart@1`
-candlestick-and-volume surface over deterministic fixture data, a plan-derived
-command palette (Ctrl+K), and SQLite Workspace Instance persistence whose
-save channel truthfully reports `saving` / `saved` / `failed`. No method
-engine, no real market data, no broker, and no live trading exist — see the
+**T1 — Platform Shell and Trading-Surface Proof (implemented, independently
+verified, formally closed)**. The product now has a real, locally runnable
+VICT consumer application: a product-owned TradingShell, the canonical
+Application Definition (Desk/Markets plus Research → Practice → Operate →
+Review → System navigation), a Markets workspace with a registered
+`trading.market-chart@1` candlestick-and-volume surface over deterministic
+fixture data, a plan-derived command palette (Ctrl+K), and SQLite Workspace
+Instance persistence whose save channel truthfully reports `saving` /
+`saved` / `failed`. The closure remediation was independently re-verified at
+`dda040a` — **VERIFIED WITH NON-BLOCKING ISSUES — FORMAL T1 CLOSURE
+PERMITTED**. No Method engine, real market data, broker integration, replay,
+backtest, simulated fills, signals, AI, or T2 functionality has begun; T2 is
+permitted but not started — see the
 [implementation report](docs/report/TRADING-OS-T1-PLATFORM-SHELL-IMPLEMENTATION.md),
 the [independent verification record](docs/report/TRADING-OS-T1-INDEPENDENT-VERIFICATION.md)
-(preserved byte-exactly), and the
-[closure record](docs/report/TRADING-OS-T1-CLOSURE.md).
+(preserved byte-exactly), the
+[closure record](docs/report/TRADING-OS-T1-CLOSURE.md), and the
+[focused re-verification record](docs/report/TRADING-OS-T1-CLOSURE-REVERIFICATION.md).
 
 T0 remains the authoritative documentation stage; its records below are
 byte-identical to their audited revisions.
@@ -105,3 +108,4 @@ one-way: VICT never depends on any Trading OS package.
 | [`docs/report/TRADING-OS-T1-PLATFORM-SHELL-IMPLEMENTATION.md`](docs/report/TRADING-OS-T1-PLATFORM-SHELL-IMPLEMENTATION.md)       | T1 implementation report: acceptance matrix, release identity, architecture, chart-library decision, persistence/SSR/a11y evidence, limitations, exclusions |
 | [`docs/report/TRADING-OS-T1-INDEPENDENT-VERIFICATION.md`](docs/report/TRADING-OS-T1-INDEPENDENT-VERIFICATION.md)                 | Independent T1 verification: acceptance-matrix verdicts, findings F-1–F-14, adversarial persistence probes, real-browser evidence (byte-preserved)          |
 | [`docs/report/TRADING-OS-T1-CLOSURE.md`](docs/report/TRADING-OS-T1-CLOSURE.md)                                                   | T1 closure record: finding-by-finding disposition, remediation scope and evidence, verification ladder, formal closure status                               |
+| [`docs/report/TRADING-OS-T1-CLOSURE-REVERIFICATION.md`](docs/report/TRADING-OS-T1-CLOSURE-REVERIFICATION.md)                     | Focused independent re-verification of the T1 closure remediation at `dda040a`: persistence-truth probes, evidence-integrity checks, full ladder, verdict   |

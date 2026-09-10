@@ -4,26 +4,28 @@
 **Record type:** Formal closure record (remediation and disposition of the
 independent verification findings)
 **Date:** 2026-09-10
-**Status:** Remediation complete and fully verified in-repo; **formal closure
-is conditional on a focused independent re-verification of the remediation**
-(see §1 and §7).
+**Status:** Remediation complete and fully verified in-repo; independently
+re-verified at `dda040a` (§7); **T1 is formally closed** (§9). T2 is
+permitted as the next roadmap stage but has not begun.
 
 ---
 
 ## 0. Inputs and exact SHAs
 
-| Item                                                | Value                                                                                                                                                                                           |
-| --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Repository                                          | `C:\Users\RZ1\Desktop\RZ\260909-VCT-Trading` (remote `https://github.com/radz2291/VICT-Trading`)                                                                                                |
-| Audit baseline (independent verification committed) | `279fb29e39c9de7d91c8d4efceeba8e1e9da7a18` — `HEAD == origin/main` at closure start (verified after `git fetch`); clean tracked tree                                                            |
-| Governing audit                                     | [`TRADING-OS-T1-INDEPENDENT-VERIFICATION.md`](TRADING-OS-T1-INDEPENDENT-VERIFICATION.md) — preserved **byte-identically** through this closure (verified by `cmp` against the `279fb29` blob)   |
-| Implementation report                               | [`TRADING-OS-T1-PLATFORM-SHELL-IMPLEMENTATION.md`](TRADING-OS-T1-PLATFORM-SHELL-IMPLEMENTATION.md) — formatted (audit F-1 disposition) with an appended Errata section; original body preserved |
-| T0 reconciliation record                            | Byte-restored to its `22a6b34` revision (audit F-2 disposition); verified byte-identical to the `22a6b34` blob                                                                                  |
-| Environment                                         | Windows 10, Node v22.13.1, npm 10.9.2, Playwright 1.63.0 against real system Chrome (`channel: 'chrome'`)                                                                                       |
+| Item                                                | Value                                                                                                                                                                                                                                                                                 |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Repository                                          | `C:\Users\RZ1\Desktop\RZ\260909-VCT-Trading` (remote `https://github.com/radz2291/VICT-Trading`)                                                                                                                                                                                      |
+| Audit baseline (independent verification committed) | `279fb29e39c9de7d91c8d4efceeba8e1e9da7a18` — `HEAD == origin/main` at closure start (verified after `git fetch`); clean tracked tree                                                                                                                                                  |
+| Governing audit                                     | [`TRADING-OS-T1-INDEPENDENT-VERIFICATION.md`](TRADING-OS-T1-INDEPENDENT-VERIFICATION.md) — preserved **byte-identically** through this closure (verified by `cmp` against the `279fb29` blob)                                                                                         |
+| Focused re-verification                             | [`TRADING-OS-T1-CLOSURE-REVERIFICATION.md`](TRADING-OS-T1-CLOSURE-REVERIFICATION.md) — committed at `dda040a7bf92e9bcb718d6fa255e70706078d5fc`; verdict **VERIFIED WITH NON-BLOCKING ISSUES — FORMAL T1 CLOSURE PERMITTED** (RV-1…RV-3 non-blocking; RV-1 corrected in this revision) |
+| Implementation report                               | [`TRADING-OS-T1-PLATFORM-SHELL-IMPLEMENTATION.md`](TRADING-OS-T1-PLATFORM-SHELL-IMPLEMENTATION.md) — formatted (audit F-1 disposition) with an appended Errata section; original body preserved                                                                                       |
+| T0 reconciliation record                            | Byte-restored to its `22a6b34` revision (audit F-2 disposition); verified byte-identical to the `22a6b34` blob                                                                                                                                                                        |
+| Environment                                         | Windows 10, Node v22.13.1, npm 10.9.2, Playwright 1.63.0 against real system Chrome (`channel: 'chrome'`)                                                                                                                                                                             |
 
 Ancestry remains linear: `22a6b34 → 2889765 → cebfa9a → 94da4db → 279fb29 →
-<this closure>`. The remote was confirmed not advanced before the closure
-commit, and the push was a normal fast-forward.
+5a726d8 (closure remediation) → dda040a (focused independent
+re-verification) → <this formal-closure revision>`. The remote was confirmed
+not advanced before each commit, and every push was a normal fast-forward.
 
 ## 1. Closure semantics — what is and is not claimed
 
@@ -35,8 +37,9 @@ renderer type shim (F-3), and F-4/F-11 remediation.
 This closure performs those remediations — and several more — **after** the
 audit. The remediation changes production behavior, most materially the
 Workspace Instance persistence path (client save channel and server write
-ordering). **Nothing in this record claims independent verification of the
-remediated state.** The correct formal status is therefore:
+ordering). **At the remediation commit itself, nothing claimed independent
+verification of the remediated state.** The interim formal status was
+therefore:
 
 ```text
 T1 IMPLEMENTED — INDEPENDENTLY VERIFIED AT 279fb29 (VERIFIED WITH
@@ -48,6 +51,16 @@ FORMAL CLOSURE
 The re-verification scope is bounded (§7): the remediation diff, the
 persistence-truth behavior it introduced, and the adversarial test evidence —
 not a repeat of the full T1 audit, whose verdict stands for `279fb29`.
+
+**That condition has been discharged.** The focused independent
+re-verification
+([`TRADING-OS-T1-CLOSURE-REVERIFICATION.md`](TRADING-OS-T1-CLOSURE-REVERIFICATION.md),
+committed at `dda040a7bf92e9bcb718d6fa255e70706078d5fc`) verified the bounded
+scope against primary evidence and returned the accepted verdict recorded in
+§9. T1 is formally closed. The distinction between the original
+implementation (`94da4db`), the initial independent audit (`279fb29`), the
+closure remediation (`5a726d8`), the focused independent re-verification
+(`dda040a`), and this formal closure is preserved throughout this record.
 
 ## 2. Remediation summary by audit finding (F-1 … F-14)
 
@@ -180,7 +193,13 @@ evidence) and inspected:
 | --------------------------------- | --------------------------- | -------------------------------------------------------------------------------------- |
 | `desktop-desk.png`                | Desk, 1440×900              | `Ctrl K` label (F-5); truthful chrome; declared navigation; no layout regression       |
 | `desktop-markets-saved.png`       | Markets, Balanced, 1440×900 | `Workspace saved` in the strip; chart, watchlist, controls intact                      |
-| `desktop-markets-save-failed.png` | Markets, Inspect, 1440×900  | `Save failed — not persisted` in warning color with dot + text; workspace fully usable |
+| `desktop-markets-save-failed.png` | Markets, Balanced, 1440×900 | `Save failed — not persisted` in warning color with dot + text; workspace fully usable |
+
+Layout-label correction (re-verification finding RV-1): the
+`desktop-markets-save-failed.png` capture shows the **Balanced** layout
+(Balanced segment active, watchlist beside the chart), exactly as committed;
+an earlier revision of this table mislabeled it "Inspect". The image itself
+is accurate evidence of the failed-save state and is unchanged.
 
 The historical T1 evidence in `docs/evidence/t1/` is preserved byte-identical
 (verified against `279fb29`; the closure browser run initially overwrote
@@ -230,6 +249,19 @@ closure requires a focused independent re-verification of exactly:
 Everything else about T1 stands on the independent audit at `279fb29` and is
 not re-litigated.
 
+**Resolution.** This re-verification was performed and committed at
+`dda040a7bf92e9bcb718d6fa255e70706078d5fc` as
+[`TRADING-OS-T1-CLOSURE-REVERIFICATION.md`](TRADING-OS-T1-CLOSURE-REVERIFICATION.md).
+It independently re-verified all five scope items against primary evidence
+(real HTTP, real SQLite, real Chrome, real process restarts; byte-identity of
+every frozen record; the full ladder and the fresh-clone ladder including
+browser tests) and returned **VERIFIED WITH NON-BLOCKING ISSUES — FORMAL T1
+CLOSURE PERMITTED**. Its findings are non-blocking: RV-1 (evidence-caption
+inaccuracy) is corrected in this revision (§5); RV-2 (audit-environment
+incident) and RV-3 (check-hardening note) are audit-environment/verification
+notes, not product blockers, and are carried forward in §10. Formal closure
+is recorded in §9.
+
 ## 8. Explicitly not done (boundary discipline)
 
 - **T2 is not started and is not authorized by this record.** No method
@@ -241,15 +273,49 @@ not re-litigated.
   covers `.data/`, `test-results/`, build output; `git ls-files` verified).
 - The upstream VICT obligations (F-3 issue; optional F-7 host-hook proposal)
   remain with the product owner — recorded, not discharged.
+- No Method engine, real market data, broker integration, replay, backtest,
+  simulated fills, signals, or AI functionality has begun; nothing beyond the
+  honest planned states exists, and no T2 work of any kind has started.
 
 ## 9. Formal T1 status
 
+Accepted verdict of record (focused independent re-verification at
+`dda040a7bf92e9bcb718d6fa255e70706078d5fc`):
+
 ```text
-T1 IMPLEMENTED — INDEPENDENTLY VERIFIED AT 279fb29 (VERIFIED WITH
-NON-BLOCKING ISSUES, F-1…F-14) — CLOSURE REMEDIATION APPLIED AND VERIFIED
-IN-REPO (LADDER §6 GREEN, 99/99 UNIT, 19/0 BROWSER, 0 AUDIT) — FINDINGS:
-9 REMEDIATED (F-1, F-4, F-5, F-6, F-9, F-10, F-11, F-14 + F-2 RESTORATION),
-1 ERRATUM RECORDED (F-8), 3 ACCEPTED LIMITATIONS (F-7, F-12, F-13),
-1 DEFERRED UPSTREAM (F-3) — FOCUSED INDEPENDENT RE-VERIFICATION OF THE
-REMEDIATION REQUIRED BEFORE FORMAL CLOSURE — T2 NOT STARTED
+VERIFIED WITH NON-BLOCKING ISSUES — FORMAL T1 CLOSURE PERMITTED
+TRADING OS T1 CLOSURE REMEDIATION INDEPENDENTLY VERIFIED — FORMAL CLOSURE PERMITTED
+TRADING OS T2 HAS NOT BEGUN
 ```
+
+```text
+T1 FORMALLY CLOSED — IMPLEMENTED AND REPORTED AT 94da4db — INDEPENDENTLY
+VERIFIED AT 279fb29 (VERIFIED WITH NON-BLOCKING ISSUES, F-1…F-14) — CLOSURE
+REMEDIATION APPLIED AND VERIFIED IN-REPO AT 5a726d8 (LADDER §6 GREEN, 99/99
+UNIT, 19/0 BROWSER, 0 AUDIT) — REMEDIATION INDEPENDENTLY RE-VERIFIED AT
+dda040a (VERIFIED WITH NON-BLOCKING ISSUES — FORMAL T1 CLOSURE PERMITTED;
+RV-1 CORRECTED IN THIS REVISION) — FINDINGS: 9 REMEDIATED (F-1, F-4, F-5,
+F-6, F-9, F-10, F-11, F-14 + F-2 RESTORATION), 1 ERRATUM RECORDED (F-8),
+3 ACCEPTED LIMITATIONS (F-7, F-12, F-13), 1 DEFERRED UPSTREAM (F-3) —
+OBLIGATIONS CARRIED FORWARD IN §10 — T2 PERMITTED — NOT STARTED
+```
+
+## 10. Carried-forward obligations (accepted and deferred — open after closure)
+
+Formal closure accepts the following obligations as open. None blocks T1;
+each is honored before the stage or activity it affects.
+
+| Obligation                                                                                                                            | Origin                                                                        | Carry-forward status                                                                                                                                                                                                                                                           |
+| ------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| F-3 — upstream VICT `renderer-svelte` declaration defect (0.1.1 tarball ships no `dist/` while declaring `./dist/index.d.ts`)         | Audit §5/§13                                                                  | **Deferred upstream, open.** Filing the upstream VICT issue remains with the product owner. The in-repo shim is a `tsconfig` types mapping only (runtime untouched) and is an explicit upgrade re-verification gate: any renderer upgrade re-runs conformance before adoption. |
+| F-7 — renderer-selector coupling (`shell.css` targets renderer-internal selectors; additive layout only)                              | Audit §4/§13; documented in place                                             | **Accepted limitation, open.** Failure mode is degraded layout, not broken behavior. Upstream stable host-styling-hook proposal remains optional future work; covered by the same upgrade re-verification gate as F-3.                                                         |
+| F-12 — plain `npm ci` fails on npm 10.9.2 (yaml peer inconsistency)                                                                   | Audit §3.4; re-proven by the re-verification (§8)                             | **Accepted limitation, open.** The documented `--legacy-peer-deps` install path in the README remains necessary and truthful.                                                                                                                                                  |
+| F-13 — Desk sparsity (large unused area below the status card)                                                                        | Audit §10/§13                                                                 | **Accepted limitation, open.** Honest presentation observation; Desk content arrives in later stages per the roadmap.                                                                                                                                                          |
+| RV-1 — evidence-caption correction                                                                                                    | Re-verification §6                                                            | **Corrected in this revision** (§5): the failed-save screenshot shows the **Balanced** layout. The image itself is accurate evidence and unchanged.                                                                                                                            |
+| RV-2 — audit-environment incident (stale `vite preview` process broke one `npm ci` during the re-verification; clean re-run recorded) | Re-verification §6                                                            | **Audit-process note, carried for the record.** Environment failure during the audit, not a repository defect; no product action.                                                                                                                                              |
+| RV-3 — close-flush browser check can pass vacuously depending on preceding state                                                      | Re-verification §6 (behavior re-verified by a strengthened independent probe) | **Verification-suite hardening note, carried for the record.** Behavior confirmed genuine; not a product blocker; noted for future suite hardening.                                                                                                                            |
+
+RV-2 and RV-3 are audit-environment/verification notes, not product blockers.
+The standing VICT upgrade policy (upgrades are explicit re-verification
+events) and the remediated state of F-4 (persistence-failure truth, now
+re-verified) are unchanged and remain governed by the roadmap.

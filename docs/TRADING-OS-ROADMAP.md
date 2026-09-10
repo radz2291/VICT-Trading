@@ -65,9 +65,8 @@ repository evidence; product decisions separated from framework facts.
 
 ## T1 — Platform Shell and Trading-Surface Proof
 
-**Status: implemented; independently verified at `279fb29`; closure
-remediation applied; formal closure pending focused independent
-re-verification of the remediation.** Implemented on public VICT
+**Status: implemented, independently verified, and formally closed.**
+Implemented on public VICT
 `@victframework/*@0.1.1` (release set `vict-release-set@1/0.1.1`,
 content ID `v1_e31e8dd60d05e1d6feb08b5ed0874cceae561bdf10e08d8b93e07840de8d9cdf`
 verified by recomputation). GAP-CANDIDATE-2 was closed by the verified public
@@ -92,9 +91,21 @@ its cause (worker oversubscription — no timeout was raised); and dev-tree
 audit advisories were eliminated (0 vulnerabilities).
 
 **The remediation changed production behavior — especially the persistence
-path — after the independent audit. It has therefore NOT been independently
-verified. A focused independent re-verification of the remediation is
-required before formal T1 closure.**
+path — after the independent audit.** It was therefore independently
+re-verified in a focused audit
+(`docs/report/TRADING-OS-T1-CLOSURE-REVERIFICATION.md`, committed at
+`dda040a7bf92e9bcb718d6fa255e70706078d5fc`), which returned **VERIFIED WITH
+NON-BLOCKING ISSUES — FORMAL T1 CLOSURE PERMITTED** and confirmed T2 had not
+begun. T1 is formally closed (see the closure record for the full lineage:
+implementation `94da4db` → initial independent audit `279fb29` → closure
+remediation `5a726d8` → focused re-verification `dda040a` → formal closure).
+The accepted and deferred obligations carried forward are: F-3 (upstream VICT
+`renderer-svelte` declaration defect; the type shim is an upgrade
+re-verification gate), F-7 (renderer-selector coupling, same upgrade gate),
+F-12 (documented npm 10.9.2 `--legacy-peer-deps` install workaround), and
+F-13 (accepted Desk sparsity); the re-verification notes RV-2/RV-3 are
+audit-environment/verification records, not product blockers, and RV-1 was
+corrected in the closure record.
 
 **Purpose.** Prove the consumer pattern and the platform shell with a narrow,
 honest vertical — before any method engine exists.
@@ -149,6 +160,10 @@ screenshot evidence in `docs/evidence/t1/`)_
 ---
 
 ## T2 — Method and Capability Foundation
+
+**Status: permitted — not started.** No Method engine, method model,
+capability pack, authoring surface, method vocabulary, signals, or T2
+functionality of any kind exists; no T2 work has begun.
 
 **Purpose.** Make methods first-class, versioned, and composable.
 
