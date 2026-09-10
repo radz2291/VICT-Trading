@@ -1,0 +1,171 @@
+/*
+ * Trading OS shell composition and workspace layout.
+ *
+ * The shell chrome (.tos-*) is product-owned. Workspace arrangement keys
+ * off the renderer's DECLARED data attributes (`data-screen`,
+ * `data-region`) — stable, renderer-emitted markup — to place the market
+ * workspace regions; it never re-renders or hides VICT navigation.
+ */
+.tos-shell {
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
+	overflow: hidden;
+}
+
+.tos-host {
+	flex: 1 1 auto;
+	min-height: 0;
+	overflow: auto;
+}
+
+/* The renderer root fills its host instead of the viewport. */
+.tos-host .vict-app {
+	min-height: 100%;
+}
+
+.tos-host .vict-shell {
+	min-height: 100%;
+}
+
+/* ------------------------------------------------------------------ */
+/* Markets workspace arrangement (per persisted layout preset)          */
+/* ------------------------------------------------------------------ */
+
+/* balanced: breadcrumb + controls row, chart primary, watchlist beside it */
+.tos-host main[data-screen='s.markets'] {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(230px, 300px);
+	grid-template-rows: auto auto minmax(0, 1fr);
+	grid-template-areas:
+		'breadcrumb breadcrumb'
+		'context context'
+		'primary inspection';
+	gap: calc(var(--tos-unit) * 2);
+	height: calc(100vh - 42px - 58px);
+	padding-bottom: calc(var(--tos-unit) * 2);
+}
+
+.tos-host main[data-screen='s.markets'] > nav[aria-label='Breadcrumb'] {
+	grid-area: breadcrumb;
+	margin: 0;
+}
+
+.tos-host main[data-screen='s.markets'] > section[data-region='context'] {
+	grid-area: context;
+	margin: 0 !important;
+}
+
+.tos-host main[data-screen='s.markets'] > section[data-region='primary'] {
+	grid-area: primary;
+	min-height: 0;
+	margin: 0 !important;
+	/* The renderer wraps custom components in a slot element; the panel
+	   must fill the grid row through it. */
+	display: flex;
+	flex-direction: column;
+}
+
+.tos-host main[data-screen='s.markets'] > section[data-region='primary'] > * {
+	flex: 1 1 auto;
+	min-height: 0;
+}
+
+.tos-host main[data-screen='s.markets'] > section[data-region='inspection'] {
+	grid-area: inspection;
+	min-height: 0;
+	margin: 0 !important;
+	display: flex;
+	flex-direction: column;
+}
+
+.tos-host main[data-screen='s.markets'] > section[data-region='inspection'] > * {
+	flex: 1 1 auto;
+	min-height: 0;
+}
+
+/* chart-focus: full-width tall chart, inspection hidden */
+.tos-shell[data-tos-layout='chart-focus'] .tos-host main[data-screen='s.markets'],
+.tos-shell[data-tos-watchlist='off'] .tos-host main[data-screen='s.markets'] {
+	grid-template-columns: minmax(0, 1fr);
+	grid-template-areas:
+		'breadcrumb'
+		'context'
+		'primary';
+}
+
+.tos-shell[data-tos-layout='chart-focus']
+	.tos-host
+	main[data-screen='s.markets']
+	> section[data-region='inspection'],
+.tos-shell[data-tos-watchlist='off']
+	.tos-host
+	main[data-screen='s.markets']
+	> section[data-region='inspection'] {
+	display: none;
+}
+
+/* inspect: stacked, wider inspection below */
+.tos-shell[data-tos-layout='inspect'] .tos-host main[data-screen='s.markets'] {
+	grid-template-columns: minmax(0, 1fr);
+	grid-template-rows: auto auto minmax(0, 55%) minmax(160px, auto);
+	grid-template-areas:
+		'breadcrumb'
+		'context'
+		'primary'
+		'inspection';
+}
+
+/* Chart height personality per preset */
+.tos-shell[data-tos-layout='chart-focus'] .chart-panel__plot {
+	flex-basis: 70vh;
+}
+
+.tos-shell[data-tos-layout='inspect'] .chart-panel__plot {
+	flex-basis: 34vh;
+}
+
+/* ------------------------------------------------------------------ */
+/* Responsive behavior                                                  */
+/* ------------------------------------------------------------------ */
+
+@media (max-width: 1024px) {
+	.tos-host main[data-screen='s.markets'] {
+		grid-template-columns: minmax(0, 1fr) minmax(200px, 240px);
+		height: calc(100vh - 42px - 58px);
+	}
+}
+
+@media (max-width: 719px) {
+	.tos-shell {
+		height: auto;
+		min-height: 100vh;
+	}
+
+	.tos-host {
+		overflow: visible;
+	}
+
+	.tos-host main[data-screen='s.markets'],
+	.tos-shell[data-tos-layout='inspect'] .tos-host main[data-screen='s.markets'] {
+		display: flex;
+		flex-direction: column;
+		height: auto;
+		gap: calc(var(--tos-unit) * 2);
+	}
+
+	.tos-host main[data-screen='s.markets'] > section[data-region='primary'] .chart-panel {
+		height: 58vh;
+	}
+
+	.tos-host main[data-screen='s.markets'] > section[data-region='inspection'] .watchlist {
+		max-height: 46vh;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.tos-shell *,
+	.tos-host * {
+		scroll-behavior: auto !important;
+	}
+}

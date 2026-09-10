@@ -1,0 +1,29 @@
+{
+	"name": "@trading-os/trading-surfaces",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"description": "Trading OS versioned custom trading surfaces (registered VICT component surfaces): the market chart, watchlist, workspace controls, and desk overview. Presentation-safe domain/service interfaces only — never the concrete market-data store, never Node APIs.",
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"scripts": {
+		"typecheck": "tsc -p tsconfig.json",
+		"test": "vitest run --project trading-surfaces"
+	},
+	"dependencies": {
+		"@trading-os/trading-domain": "0.1.0",
+		"@victframework/application": "0.1.1",
+		"lightweight-charts": "5.2.1"
+	},
+	"peerDependencies": {
+		"svelte": "^5.0.0"
+	},
+	"devDependencies": {
+		"svelte": "^5.28.0"
+	},
+	"engines": {
+		"node": ">=22.13.0"
+	},
+	"license": "Apache-2.0"
+}

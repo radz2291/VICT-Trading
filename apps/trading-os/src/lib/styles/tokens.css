@@ -1,0 +1,60 @@
+/*
+ * Trading OS product design tokens.
+ *
+ * These values MIRROR the theme tokens declared in the canonical
+ * Application Definition (src/lib/application/definition.ts) — a permanent
+ * test asserts the shared roles stay in lockstep, so there is exactly one
+ * effective visual system. Product-only tokens (market direction, chart
+ * palette, mono font) extend the closed VICT token vocabulary here.
+ */
+:root {
+	/* Mirrors of the definition's theme tokens (single enforced source). */
+	--tos-bg: #0d1117;
+	--tos-surface: #161c24;
+	--tos-surface-raised: #1b232e;
+	--tos-text: #e8edf2;
+	--tos-text-muted: #97a3ae;
+	--tos-accent: #d29922;
+	--tos-accent-contrast: #10151c;
+	--tos-border: #2a3340;
+	--tos-danger: #e5534b;
+	--tos-warning: #d9a53a;
+	--tos-success: #3fb27f;
+	--tos-info: #4c8bd8;
+	--tos-focus: #4fa3ff;
+	--tos-unit: 6px;
+	--tos-radius: 6px;
+
+	/* Product-only tokens (outside VICT's closed vocabulary). */
+	--tos-up: #3fb27f;
+	--tos-down: #e5534b;
+	--tos-vol-up: rgba(63, 178, 127, 0.42);
+	--tos-vol-down: rgba(229, 83, 75, 0.42);
+	--tos-chart-grid: #1d2530;
+	--tos-chart-text: #97a3ae;
+	--tos-chart-border: #2a3340;
+	--tos-chart-crosshair: #4fa3ff;
+	--tos-font-mono: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;
+
+	color-scheme: dark;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+	background: var(--tos-bg);
+	color: var(--tos-text);
+}
+
+.visually-hidden {
+	position: absolute !important;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	white-space: nowrap;
+	border: 0;
+}
