@@ -1,0 +1,56 @@
+{
+	"name": "trading-os",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"description": "Trading OS — a personal, evidence-governed trading operating system built as a consumer product on the public VICT framework.",
+	"engines": {
+		"node": ">=22.13.0"
+	},
+	"workspaces": [
+		"apps/*",
+		"packages/*"
+	],
+	"overrides": {
+		"vite": "6.3.6"
+	},
+	"scripts": {
+		"format": "prettier --write .",
+		"format:check": "prettier --check .",
+		"lint": "eslint .",
+		"typecheck": "tsc -p packages/trading-domain && tsc -p packages/trading-data && npm run typecheck -w trading-os-app",
+		"build": "npm run build -w trading-os-app",
+		"test": "vitest run",
+		"test:app": "vitest run --project app",
+		"test:domain": "vitest run --project trading-domain",
+		"test:data": "vitest run --project trading-data",
+		"test:surfaces": "vitest run --project trading-surfaces",
+		"test:persistence": "vitest run --project app -- src/lib/server/__tests__",
+		"test:e2e": "playwright test",
+		"verify:registry": "node scripts/verify-registry-resolution.mjs",
+		"verify:client-boundary": "node scripts/check-client-boundary.mjs",
+		"scaffold:evidence": "node scripts/scaffold-evidence.mjs",
+		"dev": "npm run dev -w trading-os-app",
+		"preview": "npm run preview -w trading-os-app",
+		"audit": "npm audit --omit=dev",
+		"verify": "npm run verify:registry && npm run format:check && npm run lint && npm run typecheck && npm run build && npm test && npm run verify:client-boundary && npm audit --omit=dev"
+	},
+	"devDependencies": {
+		"@playwright/test": "1.63.0",
+		"@types/node": "^22.13.0",
+		"@victframework/scaffolder": "0.1.1",
+		"@vitest/eslint-plugin": "1.4.2",
+		"axe-core": "4.10.2",
+		"eslint": "9.39.1",
+		"eslint-config-prettier": "10.1.8",
+		"eslint-plugin-svelte": "3.13.0",
+		"globals": "16.5.0",
+		"playwright": "1.63.0",
+		"prettier": "3.6.2",
+		"prettier-plugin-svelte": "3.4.0",
+		"typescript": "5.9.3",
+		"typescript-eslint": "8.46.4",
+		"vitest": "4.1.11",
+		"vite": "6.3.6"
+	}
+}

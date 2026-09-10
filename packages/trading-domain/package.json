@@ -1,0 +1,18 @@
+{
+	"name": "@trading-os/trading-domain",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"description": "Trading OS framework-neutral domain: instrument/timeframe identity, OHLCV bars, the market-data port, and the trader-owned Workspace Instance model. Pure TypeScript — no Svelte, no SQLite, no VICT imports, no Node builtins.",
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"scripts": {
+		"typecheck": "tsc -p tsconfig.json",
+		"test": "vitest run --project trading-domain"
+	},
+	"engines": {
+		"node": ">=22.13.0"
+	},
+	"license": "Apache-2.0"
+}
