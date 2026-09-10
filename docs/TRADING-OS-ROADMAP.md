@@ -38,17 +38,17 @@ Standing rules for every stage:
 
 ## Stage map
 
-| Stage | Name | Core question answered |
-| --- | --- | --- |
-| T0 | Product and Surface Foundation | What is the product, what does VICT actually give us, and how is the platform shaped? |
-| T1 | Platform Shell and Trading-Surface Proof | Does a real consumer app on public VICT packages give us a professional shell and one credible custom market surface? |
-| T2 | Method and Capability Foundation | Can methods be defined, versioned, cloned, and compared with capabilities composed — no application code? |
-| T3 | Deterministic Market Data and Evaluation | Is there one canonical, deterministic evaluation core over stored historical data? |
-| T4 | Backtest and Blind Replay | Do Backtest and Replay produce identical-behavior, future-fenced evidence? |
-| T5 | Evidence and Trader Review | Does the Journal/Evidence spine make every opportunity and decision reviewable? |
-| T6 | Live Watch | Can the method observe the current market and record opportunities without orders? |
-| T7 | Assisted Live | Can the trader operate for real with retained authority and full records? |
-| T8 | AI-Assisted Investigation | Can AI investigate evidence and propose hypotheses without inventing signals? |
+| Stage | Name                                     | Core question answered                                                                                                |
+| ----- | ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| T0    | Product and Surface Foundation           | What is the product, what does VICT actually give us, and how is the platform shaped?                                 |
+| T1    | Platform Shell and Trading-Surface Proof | Does a real consumer app on public VICT packages give us a professional shell and one credible custom market surface? |
+| T2    | Method and Capability Foundation         | Can methods be defined, versioned, cloned, and compared with capabilities composed — no application code?             |
+| T3    | Deterministic Market Data and Evaluation | Is there one canonical, deterministic evaluation core over stored historical data?                                    |
+| T4    | Backtest and Blind Replay                | Do Backtest and Replay produce identical-behavior, future-fenced evidence?                                            |
+| T5    | Evidence and Trader Review               | Does the Journal/Evidence spine make every opportunity and decision reviewable?                                       |
+| T6    | Live Watch                               | Can the method observe the current market and record opportunities without orders?                                    |
+| T7    | Assisted Live                            | Can the trader operate for real with retained authority and full records?                                             |
+| T8    | AI-Assisted Investigation                | Can AI investigate evidence and propose hypotheses without inventing signals?                                         |
 
 ---
 
@@ -65,13 +65,23 @@ repository evidence; product decisions separated from framework facts.
 
 ## T1 — Platform Shell and Trading-Surface Proof
 
+**Status: implemented (pending independent verification).** Implemented on
+public VICT `@victframework/*@0.1.1` (release set `vict-release-set@1/0.1.1`,
+content ID `v1_e31e8dd60d05e1d6feb08b5ed0874cceae561bdf10e08d8b93e07840de8d9cdf`
+verified by recomputation). GAP-CANDIDATE-2 was closed by the verified public
+VICT 0.1.1 release: the renderer emits navigation groups in first-occurrence
+route order, and the compiled plan renders the exact declared group sequence
+(Research → Practice → Operate → Review → System) — see
+`docs/report/TRADING-OS-T1-PLATFORM-SHELL-IMPLEMENTATION.md` and
+`docs/evidence/t1/` for the full record.
+
 **Purpose.** Prove the consumer pattern and the platform shell with a narrow,
 honest vertical — before any method engine exists.
 
 **Scope.**
 
 1. A **separate consumer application** installed from exact public VICT
-   packages (`@victframework/*@0.1.0`, release set `vict-release-set@1/0.1.0`),
+   packages (`@victframework/*@0.1.1`, release set `vict-release-set@1/0.1.1`),
    scaffolded with `@victframework/scaffolder`, lockfile-integrity verified.
 2. A **professional platform shell**: a product-owned `TradingShell`
    composition root in `apps/trading-os` — context strip (active
@@ -101,7 +111,8 @@ market data provider, no method engine, no strategy-specific shell (a fixture
 method may exercise the surface only as data — it appears nowhere in
 navigation or shell vocabulary).
 
-**Acceptance criteria.**
+**Acceptance criteria.** *(all verified in the T1 implementation report;
+screenshot evidence in `docs/evidence/t1/`)*
 
 - Fresh clone → install (exact versions from public registry) → build → run,
   with lockfile integrity recorded; no monorepo leakage.
@@ -287,13 +298,13 @@ Governing condition:
 
 ### Permitted change classes when adding a method
 
-| Change class | Status when adding a fixture method |
-| --- | --- |
-| **Definition only** (new Method Version + existing capabilities) | **Expected common case** — must succeed for M1 and M2 |
-| **Workspace Profile revision** (presentation-only change to an existing method's profile) | Expected to succeed **without** a new Method Version — profiles are independently versioned (Constitution §5) |
-| **New reusable capability** | Allowed when the method needs a genuinely new calculation; the new capability becomes reusable by any compatible method |
-| **New versioned custom surface** | Allowed only when the method needs a genuinely new *interaction*; recorded with justification |
-| **Core framework change** | Prohibited without an evidence-backed, recorded gap decision; VICT changes are proposed upstream, never self-applied |
+| Change class                                                                              | Status when adding a fixture method                                                                                     |
+| ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| **Definition only** (new Method Version + existing capabilities)                          | **Expected common case** — must succeed for M1 and M2                                                                   |
+| **Workspace Profile revision** (presentation-only change to an existing method's profile) | Expected to succeed **without** a new Method Version — profiles are independently versioned (Constitution §5)           |
+| **New reusable capability**                                                               | Allowed when the method needs a genuinely new calculation; the new capability becomes reusable by any compatible method |
+| **New versioned custom surface**                                                          | Allowed only when the method needs a genuinely new _interaction_; recorded with justification                           |
+| **Core framework change**                                                                 | Prohibited without an evidence-backed, recorded gap decision; VICT changes are proposed upstream, never self-applied    |
 
 ### How it is tested
 
@@ -307,11 +318,11 @@ is recorded in each affected stage's acceptance evidence.
 
 ## 3. Risk register (roadmap-level)
 
-| Risk | Mitigation |
-| --- | --- |
-| Island/props data-flow pattern proves awkward under SSR | T1 acceptance criteria exercise it first |
-| Live Watch needs push data binding | Deferred decision at T6 with evidence; framework proposal path defined |
-| Scope creep toward a universal DSL | Constitution §9 prohibits it; T2 rule-composition scope is bounded |
-| Evidence schema churn across stages | Opportunity/decision/evidence schemas versioned from T4 with migrations |
+| Risk                                                                            | Mitigation                                                                                |
+| ------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| Island/props data-flow pattern proves awkward under SSR                         | T1 acceptance criteria exercise it first                                                  |
+| Live Watch needs push data binding                                              | Deferred decision at T6 with evidence; framework proposal path defined                    |
+| Scope creep toward a universal DSL                                              | Constitution §9 prohibits it; T2 rule-composition scope is bounded                        |
+| Evidence schema churn across stages                                             | Opportunity/decision/evidence schemas versioned from T4 with migrations                   |
 | Upstream VICT dependency blocks T1 (GAP-CANDIDATE-2, navigation-group ordering) | T1 entry gate enforced; explicit recorded fallback decision required to proceed otherwise |
-| Premature production claims | Standing rule: no untested surface is called production-ready |
+| Premature production claims                                                     | Standing rule: no untested surface is called production-ready                             |

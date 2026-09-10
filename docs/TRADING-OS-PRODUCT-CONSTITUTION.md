@@ -14,7 +14,7 @@ recorded evidence rather than memory:
 
 - What exactly is my method, in the version I traded?
 - What does history say about it — and what does my practice say?
-- What did I see, decide, and do — including what I did *not* do?
+- What did I see, decide, and do — including what I did _not_ do?
 - Is my evidence for this method improving or decaying?
 
 The product is a **personal, evidence-governed Trading OS** where the trader
@@ -99,12 +99,12 @@ of the workspace/activity the trader currently has in context, plus the
 status of all independently active background operations. There is no single
 global mutable mode controlling the entire Trading Program.
 
-| Mode | Definition | Data | Orders | Records |
-| --- | --- | --- | --- | --- |
-| **Backtest** | Accelerated evaluation of a Method Version over historical data | Historical | Simulated fills only | Run summary, per-opportunity records, performance evidence |
-| **Replay** | Interactive historical practice with future information hidden (blind replay) | Historical, clock-gated | Simulated fills only | Session records, per-decision records, performance evidence |
-| **Live Watch** | The method monitors the current market in the background, records observations, and records opportunities where its rules qualify; it sends no broker orders | Current market | None — ever | Observation records, opportunity records |
-| **Assisted Live** | Real-market operation in which the trader retains final authority over every order | Current market | Broker order only on explicit human confirmation | Full opportunity/decision/evidence records |
+| Mode              | Definition                                                                                                                                                   | Data                    | Orders                                           | Records                                                     |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------- | ------------------------------------------------ | ----------------------------------------------------------- |
+| **Backtest**      | Accelerated evaluation of a Method Version over historical data                                                                                              | Historical              | Simulated fills only                             | Run summary, per-opportunity records, performance evidence  |
+| **Replay**        | Interactive historical practice with future information hidden (blind replay)                                                                                | Historical, clock-gated | Simulated fills only                             | Session records, per-decision records, performance evidence |
+| **Live Watch**    | The method monitors the current market in the background, records observations, and records opportunities where its rules qualify; it sends no broker orders | Current market          | None — ever                                      | Observation records, opportunity records                    |
+| **Assisted Live** | Real-market operation in which the trader retains final authority over every order                                                                           | Current market          | Broker order only on explicit human confirmation | Full opportunity/decision/evidence records                  |
 
 Operating conditions differ (e.g. a replay cannot know future data; Live Watch
 cannot know what the trader would have done). Where conditions overlap, behavior
@@ -117,17 +117,20 @@ These are the canonical Trading OS domain objects. Every document and stage
 uses these exact terms.
 
 ### Trading Program
+
 The governing object of a personal trading operation. Owns: accounts, capital
 allocation, the Risk Constitution, the method library, session definitions, and
 the evidence standards that qualify records. One trader may run one or more
 programs; one is active at a time in the shell.
 
 ### Account
+
 A trading account (real or simulated) with its broker, currency, balances, and
 permissions. Accounts belong to the Trading Program. T0–T6 operate on
 simulated accounts only.
 
 ### Method and Method Version
+
 A **Method** is a named lineage. A **Method Version** is an immutable member of
 that lineage and the fundamental unit of proof. A Method Version contains:
 
@@ -160,6 +163,7 @@ preserves lineage; comparison shows structural and identity differences.
 > recommendation may evolve without changing the method's trading identity.**
 
 ### Capability
+
 Reusable domain behavior used by Method Versions: indicators, market-
 structure calculations, setup detectors, session calculations, replay,
 simulated fills, position sizing, data ingestion, performance calculations.
@@ -183,6 +187,7 @@ it is consequential, one new governed capability) available to any
 compatible method.
 
 ### Opportunity, Decision, Execution, Outcome
+
 An **Opportunity** is a method-qualified occurrence: a Method Version's
 rules fired under the operating conditions of some mode. It carries its
 market context and requires no human classification to exist — Backtest and
@@ -206,12 +211,14 @@ against opportunities), trader modification, execution discipline,
 rejected-trade counterfactuals, and missed opportunities.
 
 ### Evidence
+
 The recorded, comparable results that make a Method Version's claims checkable:
 backtest runs, replay sessions, Live Watch observations, and performance
 calculations. Evidence always names the exact Method Version, capability
 revisions, data range, and operating conditions that produced it.
 
 ### Risk Constitution
+
 The independent risk authority of the Trading Program: capital limits, per-
 trade and portfolio risk, allowed sessions, prohibited conditions. It
 evaluates and can veto any proposed action. It is never derived from method
@@ -228,15 +235,18 @@ Activity performed outside the application may be recorded as a violation;
 recording it never makes it valid retroactively.
 
 ### Session
+
 A defined operating window (time-bounded or condition-bounded) declared by the
 Trading Program or by methods. Sessions are data, not platform structure.
 
 ### Workspace Instance
+
 The trader-owned arrangement of charts, panels, tools, and runtime bindings
 used in a working context. Workspace Instances are user-owned and
 method-independent. See Surface Architecture.
 
 ### Workspace Profile
+
 An independently versioned presentation recommendation that references a
 compatible Method Version (or its observation requirements): the information
 the method needs on screen. A Workspace Profile may evolve — better default
@@ -274,27 +284,27 @@ unrecorded session) are themselves recorded where possible.
 
 ## 8. Terminology
 
-| Term | Meaning |
-| --- | --- |
-| Backtest | Accelerated evaluation over historical data |
-| Replay | Interactive historical practice with future information hidden |
-| Live Watch | Background monitoring of the current market with no broker orders |
-| Assisted Live | Real-market operation with trader final authority |
-| Method / Method Version | Lineage / immutable unit of proof |
-| Capability | Reusable domain behavior |
-| Opportunity / Decision | Method-qualified occurrence record / trader resolution in an interactive mode (taken, rejected, modified) |
-| Execution / Outcome | Simulated or real fill / market result or counterfactual result |
-| Observation | Recorded method observation not (yet) qualified as an opportunity |
-| Operating mode | Activity classification (Backtest, Replay, Live Watch, Assisted Live); belongs to an activity or run, never to the shell |
-| Evidence | Recorded, attributable results |
-| Risk Constitution | Independent risk authority |
-| Trading Program | Governing object for accounts, capital, risk, methods, sessions, evidence |
-| Method Observation Requirements | Semantic information a method requires; pinned within the Method Version when behavior-affecting |
-| Workspace Instance / Workspace Profile | Trader-owned arrangement / independently versioned presentation recommendation referencing a compatible Method Version |
-| Surface | A presentation-and-interaction unit (see Surface Architecture) |
+| Term                                   | Meaning                                                                                                                  |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Backtest                               | Accelerated evaluation over historical data                                                                              |
+| Replay                                 | Interactive historical practice with future information hidden                                                           |
+| Live Watch                             | Background monitoring of the current market with no broker orders                                                        |
+| Assisted Live                          | Real-market operation with trader final authority                                                                        |
+| Method / Method Version                | Lineage / immutable unit of proof                                                                                        |
+| Capability                             | Reusable domain behavior                                                                                                 |
+| Opportunity / Decision                 | Method-qualified occurrence record / trader resolution in an interactive mode (taken, rejected, modified)                |
+| Execution / Outcome                    | Simulated or real fill / market result or counterfactual result                                                          |
+| Observation                            | Recorded method observation not (yet) qualified as an opportunity                                                        |
+| Operating mode                         | Activity classification (Backtest, Replay, Live Watch, Assisted Live); belongs to an activity or run, never to the shell |
+| Evidence                               | Recorded, attributable results                                                                                           |
+| Risk Constitution                      | Independent risk authority                                                                                               |
+| Trading Program                        | Governing object for accounts, capital, risk, methods, sessions, evidence                                                |
+| Method Observation Requirements        | Semantic information a method requires; pinned within the Method Version when behavior-affecting                         |
+| Workspace Instance / Workspace Profile | Trader-owned arrangement / independently versioned presentation recommendation referencing a compatible Method Version   |
+| Surface                                | A presentation-and-interaction unit (see Surface Architecture)                                                           |
 
 Disallowed terms in product surfaces: "live shadow" (use Live Watch),
-"signal" as an autonomous instruction (the product produces *opportunities*
+"signal" as an autonomous instruction (the product produces _opportunities_
 that a human decides on), and framework vocabulary in primary navigation.
 
 ## 9. Explicit non-goals

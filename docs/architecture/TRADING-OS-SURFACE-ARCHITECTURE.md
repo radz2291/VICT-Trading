@@ -13,13 +13,13 @@
 Trading OS separates five concerns. Each has a defined owner, and no layer
 reaches past another:
 
-| Layer | Owns | Never owns |
-| --- | --- | --- |
-| **Platform shell** | Global navigation frame, program/account context, data health, workspace context, background operations, commands, alerts, persistent application state | Any method's vocabulary, chart internals, workspace contents |
-| **Workspace** | The trader's arrangement of panels, charts, tools, and saved layouts | Method logic, capability behavior, shell state |
-| **Method definition** | Rules, inputs, observations, judgment questions, risk requirements, execution assumptions, compatibility, observation requirements, immutable version lineage | Svelte/renderer implementation, exact UI arrangement |
-| **Capability** | Reusable domain behavior: indicators, structure, detectors, sessions, replay, fills, sizing, ingestion, performance | Presentation, navigation, persistence policy |
-| **Surface** | Presentation and interaction for a region of screen | Domain rules, method logic, authorization |
+| Layer                 | Owns                                                                                                                                                          | Never owns                                                   |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| **Platform shell**    | Global navigation frame, program/account context, data health, workspace context, background operations, commands, alerts, persistent application state       | Any method's vocabulary, chart internals, workspace contents |
+| **Workspace**         | The trader's arrangement of panels, charts, tools, and saved layouts                                                                                          | Method logic, capability behavior, shell state               |
+| **Method definition** | Rules, inputs, observations, judgment questions, risk requirements, execution assumptions, compatibility, observation requirements, immutable version lineage | Svelte/renderer implementation, exact UI arrangement         |
+| **Capability**        | Reusable domain behavior: indicators, structure, detectors, sessions, replay, fills, sizing, ingestion, performance                                           | Presentation, navigation, persistence policy                 |
+| **Surface**           | Presentation and interaction for a region of screen                                                                                                           | Domain rules, method logic, authorization                    |
 
 Dependency direction is one-way downward for logic (shell → workspace →
 capability/domain) and sideways-only for presentation: surfaces consume
@@ -79,24 +79,24 @@ symbols, no timeframe hierarchy, and no indicator names.
 
 User-facing navigation (VICT navigation groups), hiding framework terminology:
 
-| Group | Entry | Responsibility |
-| --- | --- | --- |
-| *(top level)* | **Desk** | Today: active session, open opportunities, market status, next actions |
-| *(top level)* | **Markets** | Instruments and market data health (sources, staleness, coverage) |
-| **Research** | **Methods** | Method library: create, clone, edit, version, compare; Workspace Profiles |
-| **Practice** | **Backtest** | Configure and run historical evaluations; run evidence |
-| **Practice** | **Replay** | Blind-replay practice sessions over historical data |
-| **Operate** | **Live Watch** | Background method observation of the current market |
-| **Operate** | **Trading** | Assisted-live desk; every order requires explicit trader confirmation |
-| **Review** | **Journal** | Opportunities, decisions (taken / rejected / modified), and unacted opportunities |
-| **Review** | **Evidence** | Per-Method-Version performance, equity/drawdown/distribution, evidence lineage |
-| **System** | **Risk** | The Risk Constitution: capital, limits, sessions, overrides |
-| **System** | **Settings** | Data sources, integrations, recovery, program administration |
+| Group         | Entry          | Responsibility                                                                    |
+| ------------- | -------------- | --------------------------------------------------------------------------------- |
+| _(top level)_ | **Desk**       | Today: active session, open opportunities, market status, next actions            |
+| _(top level)_ | **Markets**    | Instruments and market data health (sources, staleness, coverage)                 |
+| **Research**  | **Methods**    | Method library: create, clone, edit, version, compare; Workspace Profiles         |
+| **Practice**  | **Backtest**   | Configure and run historical evaluations; run evidence                            |
+| **Practice**  | **Replay**     | Blind-replay practice sessions over historical data                               |
+| **Operate**   | **Live Watch** | Background method observation of the current market                               |
+| **Operate**   | **Trading**    | Assisted-live desk; every order requires explicit trader confirmation             |
+| **Review**    | **Journal**    | Opportunities, decisions (taken / rejected / modified), and unacted opportunities |
+| **Review**    | **Evidence**   | Per-Method-Version performance, equity/drawdown/distribution, evidence lineage    |
+| **System**    | **Risk**       | The Risk Constitution: capital, limits, sessions, overrides                       |
+| **System**    | **Settings**   | Data sources, integrations, recovery, program administration                      |
 
 Movement path: **Research → Practice (Backtest, Replay) → Operate (Live
 Watch, Trading) → Review (Journal, Evidence)** — the product's central loop.
 Honest VICT `0.1.0` fact: `ApplicationRoute.nav.order` orders routes only
-*within* a navigation group, and the canonical renderer sorts navigation
+_within_ a navigation group, and the canonical renderer sorts navigation
 groups alphabetically by group name (audit §2, §5) — so this loop order
 cannot currently be expressed in the rendered navigation. Declared
 navigation-group ordering is a genuine upstream VICT dependency
