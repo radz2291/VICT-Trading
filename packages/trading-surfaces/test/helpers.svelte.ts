@@ -99,23 +99,35 @@ export function testWorkspace(overrides: Partial<WorkspaceService> = {}): Worksp
 		layoutPreset: 'balanced',
 		watchlistVisible: true
 	});
+	let saveState = $state<WorkspaceService['saveState']>('idle');
 	return {
 		get state() {
 			return state;
+		},
+		get saveState() {
+			return saveState;
 		},
 		instruments,
 		timeframes,
 		setInstrument(id: string) {
 			state = { ...state, instrumentId: id };
+			saveState = 'saved';
 		},
 		setTimeframe(id: string) {
 			state = { ...state, timeframeId: id };
+			saveState = 'saved';
 		},
 		setLayoutPreset(preset: WorkspaceService['state']['layoutPreset']) {
 			state = { ...state, layoutPreset: preset };
+			saveState = 'saved';
 		},
 		setWatchlistVisible(visible: boolean) {
 			state = { ...state, watchlistVisible: visible };
+			saveState = 'saved';
+		},
+		flush() {
+			// Test double: nothing is transmitted; the channel reports saved.
+			saveState = 'saved';
 		},
 		...overrides
 	} satisfies WorkspaceService;

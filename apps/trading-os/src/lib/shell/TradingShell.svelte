@@ -80,7 +80,7 @@
 	const workspaceState = $derived(services.workspace.state);
 </script>
 
-<svelte:window onkeydown={onShellKeydown} />
+<svelte:window onkeydown={onShellKeydown} onpagehide={() => services.workspace.flush()} />
 
 <div
 	class="tos-shell"

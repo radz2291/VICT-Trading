@@ -10,7 +10,9 @@
 	 *
 	 * Accessibility: modal dialog pattern with combobox/listbox semantics,
 	 * roving active option, Escape to close, and focus restoration to the
-	 * invoking element.
+	 * invoking element. The listbox popup (including its zero-results status
+	 * row) is visible whenever the palette is open, so `aria-expanded` is
+	 * always true here — it never reports "collapsed" with a visible popup.
 	 */
 	import { tick } from 'svelte';
 	import { goto } from '$app/navigation';
@@ -179,7 +181,7 @@
 			class="palette__input"
 			type="text"
 			role="combobox"
-			aria-expanded={filtered.length > 0}
+			aria-expanded="true"
 			aria-controls="tos-palette-list"
 			aria-activedescendant={filtered[activeIndex] !== undefined
 				? `tos-command-${activeIndex}`

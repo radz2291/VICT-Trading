@@ -65,8 +65,10 @@ repository evidence; product decisions separated from framework facts.
 
 ## T1 — Platform Shell and Trading-Surface Proof
 
-**Status: implemented (pending independent verification).** Implemented on
-public VICT `@victframework/*@0.1.1` (release set `vict-release-set@1/0.1.1`,
+**Status: implemented; independently verified at `279fb29`; closure
+remediation applied; formal closure pending focused independent
+re-verification of the remediation.** Implemented on public VICT
+`@victframework/*@0.1.1` (release set `vict-release-set@1/0.1.1`,
 content ID `v1_e31e8dd60d05e1d6feb08b5ed0874cceae561bdf10e08d8b93e07840de8d9cdf`
 verified by recomputation). GAP-CANDIDATE-2 was closed by the verified public
 VICT 0.1.1 release: the renderer emits navigation groups in first-occurrence
@@ -74,6 +76,25 @@ route order, and the compiled plan renders the exact declared group sequence
 (Research → Practice → Operate → Review → System) — see
 `docs/report/TRADING-OS-T1-PLATFORM-SHELL-IMPLEMENTATION.md` and
 `docs/evidence/t1/` for the full record.
+
+The independent audit
+(`docs/report/TRADING-OS-T1-INDEPENDENT-VERIFICATION.md`, preserved
+byte-exactly) verified every T1 acceptance criterion in a real browser and
+returned **VERIFIED WITH NON-BLOCKING ISSUES — FORMAL T1 CLOSURE PERMITTED**.
+The closure remediation (see
+`docs/report/TRADING-OS-T1-CLOSURE.md`) then resolved the audit's findings:
+most notably the persistence channel now truthfully exposes `saving` /
+`saved` / `failed` states with bounded retries, request timeouts,
+stale-response guards, page-hide flush, and server-side stale-write refusal,
+covered by adversarial tests; `format:check` passes with evidentiary records
+byte-frozen by policy; the F-10 load-induced unit-test timeout was fixed at
+its cause (worker oversubscription — no timeout was raised); and dev-tree
+audit advisories were eliminated (0 vulnerabilities).
+
+**The remediation changed production behavior — especially the persistence
+path — after the independent audit. It has therefore NOT been independently
+verified. A focused independent re-verification of the remediation is
+required before formal T1 closure.**
 
 **Purpose.** Prove the consumer pattern and the platform shell with a narrow,
 honest vertical — before any method engine exists.
@@ -111,8 +132,8 @@ market data provider, no method engine, no strategy-specific shell (a fixture
 method may exercise the surface only as data — it appears nowhere in
 navigation or shell vocabulary).
 
-**Acceptance criteria.** *(all verified in the T1 implementation report;
-screenshot evidence in `docs/evidence/t1/`)*
+**Acceptance criteria.** _(all verified in the T1 implementation report;
+screenshot evidence in `docs/evidence/t1/`)_
 
 - Fresh clone → install (exact versions from public registry) → build → run,
   with lockfile integrity recorded; no monorepo leakage.

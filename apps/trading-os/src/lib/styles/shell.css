@@ -3,8 +3,14 @@
  *
  * The shell chrome (.tos-*) is product-owned. Workspace arrangement keys
  * off the renderer's DECLARED data attributes (`data-screen`,
- * `data-region`) — stable, renderer-emitted markup — to place the market
- * workspace regions; it never re-renders or hides VICT navigation.
+ * `data-region`) and the renderer-internal structural classes (`.vict-app`,
+ * `.vict-shell`) below. Those internal names are NOT a declared public
+ * contract (independent-audit finding F-7): this file only ADDS sizing and
+ * arrangement — it never re-renders, rearranges, or hides VICT navigation,
+ * and the failure mode of a renderer rename is degraded layout, not broken
+ * behavior. This coupling is a recorded upgrade re-verification gate: every
+ * VICT release-set upgrade must re-run the full browser suites, which
+ * assert the real rendered structure these rules depend on.
  */
 .tos-shell {
 	display: flex;

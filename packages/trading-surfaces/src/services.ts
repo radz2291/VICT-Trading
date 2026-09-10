@@ -26,6 +26,21 @@ export interface BackgroundOperation {
 	readonly state: 'running' | 'completed' | 'failed';
 }
 
+/**
+ * Truthful state of the workspace persistence channel.
+ *
+ * - `idle`   — nothing to persist (or nothing changed since the last save).
+ * - `saving` — a save is pending or in flight (debounce window, request on
+ *              the wire, or a scheduled retry). The workspace may not be
+ *              persisted yet.
+ * - `saved`  — the newest save completed successfully.
+ * - `failed` — the newest save failed and its retry budget is exhausted;
+ *              the in-memory state was NOT persisted.
+ *
+ * A failed save is never silently suppressed: the shell renders this state.
+ */
+export type WorkspaceSaveState = 'idle' | 'saving' | 'saved' | 'failed';
+
 /** The workspace controller surface used by trading islands. */
 export interface WorkspaceService {
 	/** Reactive snapshot of the persisted workspace state. */
@@ -34,10 +49,17 @@ export interface WorkspaceService {
 	readonly instruments: readonly Instrument[];
 	/** Selectable timeframes (from the bound market-data source). */
 	readonly timeframes: readonly Timeframe[];
+	/** Reactive, truthful persistence-channel state (see `WorkspaceSaveState`). */
+	readonly saveState: WorkspaceSaveState;
 	setInstrument(instrumentId: string): void;
 	setTimeframe(timeframeId: string): void;
 	setLayoutPreset(preset: WorkspaceLayoutPreset): void;
 	setWatchlistVisible(visible: boolean): void;
+	/**
+	 * Persist immediately, bypassing the debounce window (used on page hide
+	 * and available to surfaces). No-op when nothing is un-persisted.
+	 */
+	flush(): void;
 }
 
 /** Truthful background-operation reporting (no fake jobs, ever). */

@@ -1,0 +1,16 @@
+# Evidentiary records — byte-preserved, never reformatted.
+#
+# Independent audit and verification records are historical evidence. Every
+# future diff against them must be meaningful by construction, so they are
+# excluded from formatting forever (T1 closure remediation of findings F-1
+# and F-2 in docs/report/TRADING-OS-T1-INDEPENDENT-VERIFICATION.md):
+#
+# - docs/audit/*.md were byte-restored to their original audited revisions
+#   (the T0 reconciliation had been whitespace-reformatted at T1);
+# - docs/report/TRADING-OS-T1-INDEPENDENT-VERIFICATION.md is preserved
+#   byte-exactly as committed by the independent auditor (279fb29).
+#
+# Active documents (roadmap, README, implementation/closure records) remain
+# formatted. New independent audit reports must be added here when committed.
+docs/audit/*.md
+docs/report/TRADING-OS-T1-INDEPENDENT-VERIFICATION.md

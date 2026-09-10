@@ -12,7 +12,8 @@
 		"packages/*"
 	],
 	"overrides": {
-		"vite": "6.3.6"
+		"vite": "6.4.3",
+		"cookie": "^0.7.0"
 	},
 	"scripts": {
 		"format": "prettier --write .",
@@ -45,12 +46,13 @@
 		"eslint-config-prettier": "10.1.8",
 		"eslint-plugin-svelte": "3.13.0",
 		"globals": "16.5.0",
+		"happy-dom": "^20.14.3",
 		"playwright": "1.63.0",
 		"prettier": "3.6.2",
 		"prettier-plugin-svelte": "3.4.0",
 		"typescript": "5.9.3",
 		"typescript-eslint": "8.46.4",
-		"vitest": "4.1.11",
-		"vite": "6.3.6"
+		"vite": "6.4.3",
+		"vitest": "4.1.11"
 	}
 }

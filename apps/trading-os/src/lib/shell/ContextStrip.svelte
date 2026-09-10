@@ -6,19 +6,40 @@
 	 * chrome — VICT remains responsible for navigation and screens inside
 	 * the host below it.
 	 */
-	import type { TradingServices } from '@trading-os/trading-surfaces';
+	import { browser } from '$app/environment';
+	import type { TradingServices, WorkspaceSaveState } from '@trading-os/trading-surfaces';
 
 	let { services, onOpenPalette }: { services: TradingServices; onOpenPalette: () => void } =
 		$props();
 
-	const state = $derived(services.workspace.state);
+	const workspaceState = $derived(services.workspace.state);
+	const saveState = $derived(services.workspace.saveState);
 	const instrument = $derived(
-		services.workspace.instruments.find((entry) => entry.id === state.instrumentId) ?? null
+		services.workspace.instruments.find((entry) => entry.id === workspaceState.instrumentId) ?? null
 	);
 	const timeframe = $derived(
-		services.workspace.timeframes.find((entry) => entry.id === state.timeframeId) ?? null
+		services.workspace.timeframes.find((entry) => entry.id === workspaceState.timeframeId) ?? null
 	);
 	const operationCount = $derived(services.backgroundOperations.operations.length);
+
+	// Platform-aware shortcut display (F-5): the palette opens with Ctrl+K
+	// everywhere and Cmd+K on Apple platforms. The label is resolved on the
+	// client after mount so SSR output stays deterministic.
+	let shortcutLabel = $state('Ctrl K');
+	$effect(() => {
+		if (browser) {
+			const platform = `${navigator.platform ?? ''} ${navigator.userAgent}`;
+			shortcutLabel = /Mac|iPhone|iPad|iPod/i.test(platform) ? '⌘K' : 'Ctrl K';
+		}
+	});
+
+	const SAVE_STATE_LABEL: Record<WorkspaceSaveState, string | null> = {
+		idle: null,
+		saving: 'Saving…',
+		saved: 'Workspace saved',
+		failed: 'Save failed — not persisted'
+	};
+	const saveLabel = $derived(SAVE_STATE_LABEL[saveState]);
 </script>
 
 <header class="tos-strip">
@@ -47,6 +68,18 @@
 		<span class="visually-hidden">Background operations: </span>
 		{operationCount === 0 ? 'No background operations' : `${operationCount} running`}
 	</span>
+	{#if saveLabel !== null}
+		<span
+			class="tos-strip__item tos-strip__item--save"
+			class:tos-strip__item--save-failed={saveState === 'failed'}
+			data-tos-save={saveState}
+			role="status"
+		>
+			<span class="tos-dot tos-dot--save-{saveState}" aria-hidden="true"></span>
+			<span class="visually-hidden">Workspace save: </span>
+			{saveLabel}
+		</span>
+	{/if}
 	<span
 		class="tos-strip__item tos-strip__item--fixture"
 		title="Deterministic synthetic series — never a live feed"
@@ -61,7 +94,7 @@
 		onclick={onOpenPalette}
 		aria-label="Open command palette (Control K)"
 	>
-		⌘K
+		{shortcutLabel}
 	</button>
 </header>
 
@@ -117,6 +150,28 @@
 
 	.tos-strip__item--status {
 		color: var(--tos-text-muted);
+	}
+
+	.tos-strip__item--save {
+		color: var(--tos-text-muted);
+		font-size: 0.72rem;
+	}
+
+	.tos-strip__item--save-failed {
+		color: var(--tos-warning);
+	}
+
+	.tos-dot--save-saving {
+		background: var(--tos-accent);
+	}
+
+	.tos-dot--save-saved {
+		background: var(--tos-text-muted);
+		opacity: 0.6;
+	}
+
+	.tos-dot--save-failed {
+		background: var(--tos-warning);
 	}
 
 	.tos-strip__item--fixture {
@@ -175,6 +230,9 @@
 		}
 		.tos-strip__item--fixture {
 			display: none;
+		}
+		.tos-strip__item--save {
+			font-size: 0.68rem;
 		}
 	}
 </style>

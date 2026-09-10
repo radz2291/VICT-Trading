@@ -9,12 +9,12 @@ not marked independently verified or formally complete.
 
 ## 1. Starting and final state
 
-| Item | Value |
-| --- | --- |
-| Starting SHA (verified equal to `origin/main` before work) | `22a6b34773033bc5d807b4bdd130f30240b7079d` (`docs(t0): reconcile independent review findings`) |
-| Working tree at start | clean; linear history; remote not advanced |
-| Implementation commits | `2889765` `chore(t1): bootstrap VICT Trading OS consumer`; `cebfa9a` `feat(t1): build platform shell and market workspace`; `69d8ad4` `docs(t1): record platform-shell implementation` (full SHAs printed by `git log`) |
-| VICT reference checkout | `C:\Users\RZ1\Desktop\RZ\260831-VCT-02`, release-report commit `5c8b14d016474a8bbb5fa023e5457f53b49fa072` — read-only; never modified, never committed to, never resolved at runtime |
+| Item                                                       | Value                                                                                                                                                                                                                   |
+| ---------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Starting SHA (verified equal to `origin/main` before work) | `22a6b34773033bc5d807b4bdd130f30240b7079d` (`docs(t0): reconcile independent review findings`)                                                                                                                          |
+| Working tree at start                                      | clean; linear history; remote not advanced                                                                                                                                                                              |
+| Implementation commits                                     | `2889765` `chore(t1): bootstrap VICT Trading OS consumer`; `cebfa9a` `feat(t1): build platform shell and market workspace`; `69d8ad4` `docs(t1): record platform-shell implementation` (full SHAs printed by `git log`) |
+| VICT reference checkout                                    | `C:\Users\RZ1\Desktop\RZ\260831-VCT-02`, release-report commit `5c8b14d016474a8bbb5fa023e5457f53b49fa072` — read-only; never modified, never committed to, never resolved at runtime                                    |
 
 ## 2. Environment
 
@@ -76,30 +76,30 @@ the scaffolding evidence is reproducible from the lockfile.
 
 ## 5. Acceptance matrix and disposition
 
-| # | T1 requirement | Result | Evidence |
-| --- | --- | --- | --- |
-| A1 | Start state clean, linear, remote not advanced, VICT untouched | PASS | `git rev-parse`, `git fetch` before work; VICT checkout untouched |
-| A2 | VICT only from public registry, exact `0.1.1`, release-set content ID verified | PASS | `verify-registry-resolution.mjs` + architecture tests |
-| A3 | Five-package architecture, honest boundaries, enforceable dependency direction | PASS | Architecture tests (§7); `trading-capabilities` intentionally minimal |
-| A4 | One canonical Application Definition; compiled plan identity deterministic; exact navigation-group order | PASS | `definition.test.ts`; browser nav-order test |
-| A5 | Product-owned `TradingShell` around public `VitApp`; truthful chrome; no global mode | PASS | `TradingShell.test.ts`; browser tests |
-| A6 | Desk screen: calm, truthful, no invented analytics | PASS | Browser test asserts absence of win-rate/P&L/signal vocabulary; screenshot |
-| A7 | Markets workspace: instrument/timeframe selection, chart, OHLCV, watchlist, persisted layout controls | PASS | Browser tests; screenshots |
-| A8 | Other routes: honest, intentional safe states | PASS | Each non-T1 route renders an explicit "Planned — Stage T…" state |
-| A9 | `trading.market-chart@1` registered surface: candles, volume, crosshair, OHLCV, responsive, empty/stale/error states | PASS | `market-chart.test.ts` (+ injected-services state tests); browser tests |
-| A10 | Chart library pinned, licensed, audited, contained, SSR-safe | PASS | §8 |
-| A11 | Deterministic fixture market data, validated | PASS | `fixture-market-data.test.ts` |
-| A12 | Command palette derived from compiled plan; Ctrl+K; search/Enter/Escape; focus restore; accessible dialog | PASS | Unit + browser tests |
-| A13 | Workspace Instance persistence: save → close → reopen → restore; safe failure on invalid/future schema; no cross-workspace leakage; real reload continuity | PASS | `persistence.test.ts` (SQLite close/reopen) + browser reload test |
-| A14 | SSR succeeds; browser-only code out of SSR; Node-only storage out of client bundle; no secrets/paths serialized | PASS | SSR via production preview (`curl` verified HTML with `data-screen="s.desk"`); `check-client-boundary.mjs` |
-| A15 | No Svelte warnings; svelte-check clean | PASS | `svelte-check found 0 errors and 0 warnings` |
-| A16 | a11y: landmarks, headings, focus, Escape, contrast, reduced motion, chart textual alternative, no focus trap, no critical axe violation | PASS | axe scans (desktop + mobile) with zero critical/serious violations; unit + browser tests |
-| A17 | Responsive layouts 1440×900 / 1024×768 / 390×844, no horizontal overflow | PASS | Browser tests at all three sizes; screenshots |
-| A18 | Safe states exercised (loading, populated, empty, stale, failure) via injected services | PASS | `market-chart.test.ts` state tests |
-| A19 | Visual evidence from the real running app, inspected and iterated | PASS | §10 |
-| A20 | Verification ladder clean; clean-clone build/test | PASS | §11 |
-| A21 | No runtime DB or secrets committed; T0 records preserved | PASS | §14 |
-| A22 | Explicit exclusions respected | PASS | §12 |
+| #   | T1 requirement                                                                                                                                             | Result | Evidence                                                                                                   |
+| --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ---------------------------------------------------------------------------------------------------------- |
+| A1  | Start state clean, linear, remote not advanced, VICT untouched                                                                                             | PASS   | `git rev-parse`, `git fetch` before work; VICT checkout untouched                                          |
+| A2  | VICT only from public registry, exact `0.1.1`, release-set content ID verified                                                                             | PASS   | `verify-registry-resolution.mjs` + architecture tests                                                      |
+| A3  | Five-package architecture, honest boundaries, enforceable dependency direction                                                                             | PASS   | Architecture tests (§7); `trading-capabilities` intentionally minimal                                      |
+| A4  | One canonical Application Definition; compiled plan identity deterministic; exact navigation-group order                                                   | PASS   | `definition.test.ts`; browser nav-order test                                                               |
+| A5  | Product-owned `TradingShell` around public `VitApp`; truthful chrome; no global mode                                                                       | PASS   | `TradingShell.test.ts`; browser tests                                                                      |
+| A6  | Desk screen: calm, truthful, no invented analytics                                                                                                         | PASS   | Browser test asserts absence of win-rate/P&L/signal vocabulary; screenshot                                 |
+| A7  | Markets workspace: instrument/timeframe selection, chart, OHLCV, watchlist, persisted layout controls                                                      | PASS   | Browser tests; screenshots                                                                                 |
+| A8  | Other routes: honest, intentional safe states                                                                                                              | PASS   | Each non-T1 route renders an explicit "Planned — Stage T…" state                                           |
+| A9  | `trading.market-chart@1` registered surface: candles, volume, crosshair, OHLCV, responsive, empty/stale/error states                                       | PASS   | `market-chart.test.ts` (+ injected-services state tests); browser tests                                    |
+| A10 | Chart library pinned, licensed, audited, contained, SSR-safe                                                                                               | PASS   | §8                                                                                                         |
+| A11 | Deterministic fixture market data, validated                                                                                                               | PASS   | `fixture-market-data.test.ts`                                                                              |
+| A12 | Command palette derived from compiled plan; Ctrl+K; search/Enter/Escape; focus restore; accessible dialog                                                  | PASS   | Unit + browser tests                                                                                       |
+| A13 | Workspace Instance persistence: save → close → reopen → restore; safe failure on invalid/future schema; no cross-workspace leakage; real reload continuity | PASS   | `persistence.test.ts` (SQLite close/reopen) + browser reload test                                          |
+| A14 | SSR succeeds; browser-only code out of SSR; Node-only storage out of client bundle; no secrets/paths serialized                                            | PASS   | SSR via production preview (`curl` verified HTML with `data-screen="s.desk"`); `check-client-boundary.mjs` |
+| A15 | No Svelte warnings; svelte-check clean                                                                                                                     | PASS   | `svelte-check found 0 errors and 0 warnings`                                                               |
+| A16 | a11y: landmarks, headings, focus, Escape, contrast, reduced motion, chart textual alternative, no focus trap, no critical axe violation                    | PASS   | axe scans (desktop + mobile) with zero critical/serious violations; unit + browser tests                   |
+| A17 | Responsive layouts 1440×900 / 1024×768 / 390×844, no horizontal overflow                                                                                   | PASS   | Browser tests at all three sizes; screenshots                                                              |
+| A18 | Safe states exercised (loading, populated, empty, stale, failure) via injected services                                                                    | PASS   | `market-chart.test.ts` state tests                                                                         |
+| A19 | Visual evidence from the real running app, inspected and iterated                                                                                          | PASS   | §10                                                                                                        |
+| A20 | Verification ladder clean; clean-clone build/test                                                                                                          | PASS   | §11                                                                                                        |
+| A21 | No runtime DB or secrets committed; T0 records preserved                                                                                                   | PASS   | §14                                                                                                        |
+| A22 | Explicit exclusions respected                                                                                                                              | PASS   | §12                                                                                                        |
 
 ## 6. Architecture and dependency graph
 
@@ -246,30 +246,30 @@ defects found by inspection were fixed (collapsed chart flex chain caused by
 an invalid plain-CSS `:global()` selector; chart-wide price formatter leaking
 instrument precision onto the volume axis) and the evidence regenerated.
 
-| File | View |
-| --- | --- |
-| `docs/evidence/t1/desktop-desk.png` | Desk, 1440×900 |
-| `docs/evidence/t1/desktop-markets.png` | Markets workspace, 1440×900 |
-| `docs/evidence/t1/desktop-markets-inspect.png` | Markets, Inspect layout, 1440×900 |
-| `docs/evidence/t1/laptop-markets.png` | Markets, 1024×768 |
-| `docs/evidence/t1/mobile-markets.png` | Markets, 390×844 |
+| File                                            | View                               |
+| ----------------------------------------------- | ---------------------------------- |
+| `docs/evidence/t1/desktop-desk.png`             | Desk, 1440×900                     |
+| `docs/evidence/t1/desktop-markets.png`          | Markets workspace, 1440×900        |
+| `docs/evidence/t1/desktop-markets-inspect.png`  | Markets, Inspect layout, 1440×900  |
+| `docs/evidence/t1/laptop-markets.png`           | Markets, 1024×768                  |
+| `docs/evidence/t1/mobile-markets.png`           | Markets, 390×844                   |
 | `docs/evidence/t1/mobile-markets-watchlist.png` | Markets/watchlist stacked, 390×844 |
 
 ## 13. Verification commands and results
 
-| Command | Result |
-| --- | --- |
-| `npm run verify:registry` | OK — 6 packages at exact `0.1.1`, content ID matches |
-| `npm run format:check` | clean |
-| `npm run lint` | clean (after fixing real findings; see below) |
-| `npm run typecheck` | tsc clean; `svelte-check found 0 errors and 0 warnings` |
-| `npm run build` | success, no Svelte compiler warnings (Node SQLite experimental warning expected from `@victframework/appdata-sqlite` using `node:sqlite`) |
-| `npm test` | 77 passed (77) across domain/data/surfaces/app/architecture projects |
-| `npm run verify:client-boundary` | OK — browser bundle free of Node-only storage code |
-| `npm audit --omit=dev` | found 0 vulnerabilities |
-| `git diff --check` | clean |
-| `npx playwright test` | 14 passed, 28 skipped (project guards: each spec runs only on its declared viewport project) |
-| Clean-clone | clone of the pushed tree → `npm install --legacy-peer-deps` → build → full unit suite → registry verification: all green |
+| Command                          | Result                                                                                                                                    |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run verify:registry`        | OK — 6 packages at exact `0.1.1`, content ID matches                                                                                      |
+| `npm run format:check`           | clean                                                                                                                                     |
+| `npm run lint`                   | clean (after fixing real findings; see below)                                                                                             |
+| `npm run typecheck`              | tsc clean; `svelte-check found 0 errors and 0 warnings`                                                                                   |
+| `npm run build`                  | success, no Svelte compiler warnings (Node SQLite experimental warning expected from `@victframework/appdata-sqlite` using `node:sqlite`) |
+| `npm test`                       | 77 passed (77) across domain/data/surfaces/app/architecture projects                                                                      |
+| `npm run verify:client-boundary` | OK — browser bundle free of Node-only storage code                                                                                        |
+| `npm audit --omit=dev`           | found 0 vulnerabilities                                                                                                                   |
+| `git diff --check`               | clean                                                                                                                                     |
+| `npx playwright test`            | 14 passed, 28 skipped (project guards: each spec runs only on its declared viewport project)                                              |
+| Clean-clone                      | clone of the pushed tree → `npm install --legacy-peer-deps` → build → full unit suite → registry verification: all green                  |
 
 Non-zero intermediate results recorded (none silently rerun or suppressed):
 
@@ -401,3 +401,29 @@ verification**. It is not marked independently verified or formally complete.
 
 TRADING OS T1 IMPLEMENTED — INDEPENDENT VERIFICATION REQUIRED
 NO METHOD ENGINE, REAL MARKET DATA, BROKER OR LIVE TRADING HAS BEGUN
+
+---
+
+## Errata (appended at T1 closure remediation, 2026-09-10)
+
+Appended after the independent verification
+([TRADING-OS-T1-INDEPENDENT-VERIFICATION.md](TRADING-OS-T1-INDEPENDENT-VERIFICATION.md),
+verified this document at commit `94da4db`). The body above is preserved as
+written; these are the recorded corrections:
+
+1. **§1 implementation commit SHA.** The commit listed as
+   `69d8ad4 docs(t1): record platform-shell implementation` is a dangling
+   pre-amend commit that is not in `main` ancestry. The recorded
+   implementation-report commit is `94da4db2f6c18e8e26db77e480792b02aa24b00c`
+   (audit finding F-8).
+2. **§13 `format:check` result.** Reported as clean, but the committed tree
+   at `94da4db` fails the gate (this document and the roadmap were not
+   Prettier-formatted). Remediated at closure: both documents are formatted
+   now, and the independent verification report and the historical audit
+   records are excluded from formatting by policy (`.prettierignore`) so
+   evidence is never reformatted again (audit finding F-1).
+3. **§9 wording.** The claim "no module-level mutable singleton" predates
+   the module-level fixture `marketData` memo cache. The accurate statement:
+   all mutable service state is per-shell-instance; the only module-level
+   value is the deterministic fixture market-data source (immutable
+   memoized series) (audit finding F-9).

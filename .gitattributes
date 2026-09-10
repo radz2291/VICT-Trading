@@ -1,0 +1,7 @@
+# Normalized line endings: the repository's committed blobs are LF; checkouts
+# must be LF too, so Prettier's format gate (`format:check`) behaves
+# identically in the authoritative checkout and in every fresh clone,
+# regardless of the cloning machine's git autocrlf setting. Binary evidence
+# (screenshots) is auto-detected and untouched.
+* text=auto eol=lf
+*.png binary

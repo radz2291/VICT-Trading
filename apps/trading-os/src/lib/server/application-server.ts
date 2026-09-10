@@ -41,7 +41,10 @@ export function createAppServer() {
 		contracts: [workspaceRecordContract]
 	});
 
-	async function readWorkspace(): Promise<WorkspaceInstance> {
+	async function readWorkspaceRecord(): Promise<
+		| { readonly ok: true; readonly instance: WorkspaceInstance }
+		| { readonly ok: false; readonly code: 'EMPTY' | 'UNPARSABLE' }
+	> {
 		const result = await data.query(
 			{
 				op: 'list',
@@ -52,23 +55,54 @@ export function createAppServer() {
 			{ permissions: GRANTS, effect: 'read' }
 		);
 		if (!result.ok) {
-			return defaultWorkspaceInstance(DEFAULT_WORKSPACE_ID);
+			return { ok: false, code: 'EMPTY' };
 		}
 		const row = result.rows?.[0];
 		if (row === undefined) {
-			return defaultWorkspaceInstance(DEFAULT_WORKSPACE_ID);
+			return { ok: false, code: 'EMPTY' };
 		}
 		const parsed = parseWorkspaceInstance(row);
 		if (!parsed.ok) {
-			// Fail safe: an unreadable persisted record yields the documented
-			// default and never a crash or a partially-applied state.
-			return defaultWorkspaceInstance(DEFAULT_WORKSPACE_ID);
+			// Fail safe: an unreadable persisted record is never reinterpreted,
+			// partially applied, or crashed on.
+			return { ok: false, code: 'UNPARSABLE' };
 		}
-		return parsed.instance;
+		return { ok: true, instance: parsed.instance };
+	}
+
+	async function readWorkspace(): Promise<WorkspaceInstance> {
+		const record = await readWorkspaceRecord();
+		// Reads fail safe to the documented default: no stored record, or a
+		// record this build cannot parse (e.g. a future schema), never yields
+		// a crash or a silently reinterpreted state.
+		return record.ok ? record.instance : defaultWorkspaceInstance(DEFAULT_WORKSPACE_ID);
 	}
 
 	async function saveWorkspace(next: WorkspaceInstance): Promise<ActionResult> {
-		const record = serializeWorkspaceInstance({ ...next, updatedAt: new Date().toISOString() });
+		// The record's own updatedAt (client-issued at send time, regenerated
+		// on every attempt) is the write-ordering token. It is preserved —
+		// never re-stamped — so a late/retried write carrying an older state
+		// can be detected and refused instead of silently reverting newer
+		// persisted state.
+		const record = serializeWorkspaceInstance(next);
+		const current = await readWorkspaceRecord();
+		if (!current.ok && current.code === 'UNPARSABLE') {
+			// The store holds a record this build cannot parse (e.g. a future
+			// schema). Overwriting it is a data-destroying downgrade: refuse
+			// with a structured failure instead.
+			return {
+				ok: false,
+				code: 'SCHEMA_CONFLICT',
+				message: 'The stored workspace record cannot be read by this build; it was not overwritten.'
+			};
+		}
+		if (current.ok && Date.parse(current.instance.updatedAt) > Date.parse(record.updatedAt)) {
+			return {
+				ok: false,
+				code: 'STALE_WRITE',
+				message: 'A newer workspace state is already persisted; the older write was refused.'
+			};
+		}
 		const update = await data.mutate(
 			{
 				resourceId: 'workspace_instances',

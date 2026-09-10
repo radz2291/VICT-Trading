@@ -37,11 +37,11 @@ test.describe('Trading OS mobile (390×844)', () => {
 		await expect(watchlist).toBeVisible();
 		// OHLCV readout remains reachable.
 		await expect(page.locator('.chart-panel__readout')).toBeVisible();
-		await page.screenshot({ path: 'docs/evidence/t1/mobile-markets.png', fullPage: false });
+		await page.screenshot({ path: 'test-results/evidence/mobile-markets.png', fullPage: false });
 		// Scroll to the watchlist for a second evidence frame.
 		await watchlist.scrollIntoViewIfNeeded();
 		await page.screenshot({
-			path: 'docs/evidence/t1/mobile-markets-watchlist.png',
+			path: 'test-results/evidence/mobile-markets-watchlist.png',
 			fullPage: false
 		});
 	});

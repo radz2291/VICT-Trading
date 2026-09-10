@@ -11,6 +11,7 @@ export {
 	TradingServicesMissingError,
 	type TradingServices,
 	type WorkspaceService,
+	type WorkspaceSaveState,
 	type BackgroundOperationsService,
 	type BackgroundOperation
 } from './services.ts';

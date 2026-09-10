@@ -7,12 +7,12 @@
 
 ## 0. Starting state
 
-| Item                      | Value                                                                                            |
-| ------------------------- | ------------------------------------------------------------------------------------------------ |
-| Working repository        | `C:\Users\RZ1\Desktop\RZ\260909-VCT-Trading` (remote `https://github.com/radz2291/VICT-Trading`) |
-| Starting SHA              | `8e304ddc819e24262017d986c17b68affe3437a0`                                                       |
-| Starting state            | `HEAD == origin/main == 8e304ddc…`, clean working tree (verified after fetch)                    |
-| VICT reference repository | `C:\Users\RZ1\Desktop\RZ\260831-VCT-02` — read-only; never modified                              |
+| Item | Value |
+| --- | --- |
+| Working repository | `C:\Users\RZ1\Desktop\RZ\260909-VCT-Trading` (remote `https://github.com/radz2291/VICT-Trading`) |
+| Starting SHA | `8e304ddc819e24262017d986c17b68affe3437a0` |
+| Starting state | `HEAD == origin/main == 8e304ddc…`, clean working tree (verified after fetch) |
+| VICT reference repository | `C:\Users\RZ1\Desktop\RZ\260831-VCT-02` — read-only; never modified |
 
 ## 1. Review scope
 
@@ -23,7 +23,7 @@
   `packages/sdk/src/application.ts` (Application Definition, routes, nav,
   surfaces, component props), `packages/renderer-svelte/src/VitApp.svelte`
   (host chrome ownership, navigation sorting), `packages/renderer-svelte/src/
-Surface.svelte` (component rendering, nested surfaces),
+  Surface.svelte` (component rendering, nested surfaces),
   `packages/renderer-svelte/src/logic.ts` (route resolution — independent of
   `nav`), `packages/renderer-svelte/src/index.ts` (public exports),
   `packages/renderer-svelte/src/ChartSurface.svelte` (chart scale model),
@@ -35,11 +35,11 @@ Surface.svelte` (component rendering, nested surfaces),
 
 ## 2. Public VICT release inspected
 
-| Item                           | Value                                                                                |
-| ------------------------------ | ------------------------------------------------------------------------------------ |
-| Published release set          | `vict-release-set@1/0.1.0`, namespace `@victframework/*`, all 13 packages at `0.1.0` |
-| VICT repository HEAD inspected | `e70b1a876bf7f4bad83a611f5333d86541a0b664`                                           |
-| Canonical renderer identity    | `renderer.svelte-kit@5.0.0` (`packages/renderer-svelte/src/index.ts`)                |
+| Item | Value |
+| --- | --- |
+| Published release set | `vict-release-set@1/0.1.0`, namespace `@victframework/*`, all 13 packages at `0.1.0` |
+| VICT repository HEAD inspected | `e70b1a876bf7f4bad83a611f5333d86541a0b664` |
+| Canonical renderer identity | `renderer.svelte-kit@5.0.0` (`packages/renderer-svelte/src/index.ts`) |
 
 ## 3. Findings, evidence, and disposition
 
@@ -50,7 +50,6 @@ data-health indicator are versioned custom surfaces in the persistent VICT
 shell.
 
 **Reproduced evidence.**
-
 - `ApplicationDefinition` (`packages/sdk/src/application.ts`) contains
   routes, screens, views, forms, actions, resources, components, theme —
   and no application-wide shell regions or global surface slots.
@@ -88,7 +87,6 @@ supported; the central loop Research → Practice → Operate → Review → Sys
 is "kept legible in navigation order".
 
 **Reproduced evidence.**
-
 - `ApplicationRoute.nav.order` is documented and implemented as an order
   hint **within its group** (`packages/sdk/src/application.ts`).
 - `VitApp.svelte` (`navGroups` derivation) sorts navigation groups
@@ -150,7 +148,6 @@ identity. The old claim would fragment otherwise identical trading evidence
 over a layout change.
 
 **Disposition.** Boundary separated into three terms, used consistently:
-
 - **Method Observation Requirements** — semantic information genuinely
   required by the method, pinned within the Method Version when they affect
   behavior (instruments, data types, timeframes an evaluation must observe);
@@ -200,7 +197,6 @@ framework invocations.
 
 **Disposition.** Two-level model adopted everywhere (audit §6.1;
 Constitution §5 Capability; Surface Architecture §8; Roadmap T2/T3):
-
 1. **Pure trading computation layer** — indicators, rule evaluation,
    bar-by-bar method execution: deterministic, fast, in-process,
    independently unit-testable, no VICT persistence or authorization
@@ -227,7 +223,6 @@ execution and eventual outcome are different facts again.
 
 **Disposition.** Event model refined to the smallest coherent vocabulary
 (Constitution §5, §3.1, §8; Roadmap T4):
-
 - **Opportunity** — a method-qualified occurrence; requires no human
   classification; exists in every mode;
 - **Decision** — a trader resolution (taken / rejected / modified, including
@@ -254,7 +249,6 @@ recorded override.
 
 **Disposition.** Governing semantics separated (Constitution §5 Risk
 Constitution, §7; Roadmap T7):
-
 - **Hard limits** — the application will not execute through them; no
   per-trade acknowledgment neutralizes them; changing one is a deliberate,
   versioned Risk Constitution change;
@@ -272,7 +266,6 @@ semantics only.
 
 **Reproduced evidence and disposition.** Four matrix rows reassessed against
 source (audit §3):
-
 - **#16 Custom indicators and detectors** — reclassified SUPPORTED DIRECTLY
   BY VICT → **PRODUCT-LOCAL CAPABILITY (packaged through VICT)**: the
   computations are product-local; VICT supplies the `defineCapability`
@@ -345,10 +338,10 @@ group order and withdrawing the central-loop-order claim).
 
 ## 6. Unresolved dependencies
 
-| Dependency                                                          | Status                                                                                                                                                                                                                                                                                                                                                |
-| ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Dependency | Status |
+| --- | --- |
 | **GAP-CANDIDATE-2 — declared navigation-group ordering** (audit §6) | **Blocking T1.** Missing neutral capability, affected public contract (`ApplicationRoute.nav` in `vict.application@2`; `NAV_FIELDS` in the compiler; group sorting in `VitApp.svelte`, renderer `renderer.svelte-kit@5.0.0`), and minimum required behavior are specified in audit §6. To be proposed upstream; not implemented in either repository. |
-| GAP-CANDIDATE-1 — subscription data binding for views (audit §6)    | Unchanged: deferred to T6 with evidence; not blocking T1.                                                                                                                                                                                                                                                                                             |
+| GAP-CANDIDATE-1 — subscription data binding for views (audit §6) | Unchanged: deferred to T6 with evidence; not blocking T1. |
 
 ## 7. No-implementation confirmation
 

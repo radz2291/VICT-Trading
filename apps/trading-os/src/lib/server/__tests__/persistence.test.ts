@@ -6,7 +6,14 @@
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { createRequire } from 'node:module';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+
+// node:sqlite is a Node built-in the Vite pipeline must not try to bundle;
+// resolve it through require (the adapter itself loads it the same way).
+const { DatabaseSync } = createRequire(import.meta.url)(
+	'node:sqlite'
+) as typeof import('node:sqlite');
 import { createAppServer } from '$lib/server/application-server';
 import {
 	defaultWorkspaceInstance,
@@ -122,5 +129,111 @@ describe('workspace persistence (SQLite application-data)', () => {
 		await serverA2.close();
 		delete process.env.TRADING_OS_DB_PATH;
 		process.env.TRADING_OS_DB_PATH = join(dir, 'ws.sqlite');
+	});
+});
+
+describe('workspace save ordering (adversarial: stale, replayed, future writes)', () => {
+	function workspaceAt(
+		updatedAt: string,
+		overrides: Partial<WorkspaceInstance['state']> = {}
+	): WorkspaceInstance {
+		const base = workspaceUpdate(overrides);
+		return { ...base, updatedAt };
+	}
+
+	it('refuses a stale (older) write and keeps the newer persisted state', async () => {
+		const server = createAppServer();
+		const newer = workspaceAt('2026-09-10T12:00:00.000Z', { layoutPreset: 'inspect' });
+		const savedNewer = await server.dispatch(
+			'act.saveWorkspace',
+			serializeWorkspaceInstance(newer)
+		);
+		expect(savedNewer.ok).toBe(true);
+
+		// A delayed/retried write carrying the OLDER state arrives late.
+		const stale = workspaceAt('2026-09-10T11:59:59.000Z', { layoutPreset: 'chart-focus' });
+		const refused = await server.dispatch('act.saveWorkspace', serializeWorkspaceInstance(stale));
+		expect(refused.ok).toBe(false);
+		if (refused.ok) throw new Error('expected a structured refusal');
+		expect(refused.code).toBe('STALE_WRITE');
+
+		// The store still holds the newer state.
+		const restored = await server.readWorkspace();
+		expect(restored.state.layoutPreset).toBe('inspect');
+		expect(restored.updatedAt).toBe('2026-09-10T12:00:00.000Z');
+		await server.close();
+	});
+
+	it('accepts an equal-timestamp replay as idempotent and a newer write as fresh', async () => {
+		const server = createAppServer();
+		const first = workspaceAt('2026-09-10T12:00:00.000Z', { instrumentId: 'FXT-B' });
+		expect((await server.dispatch('act.saveWorkspace', serializeWorkspaceInstance(first))).ok).toBe(
+			true
+		);
+		// Exact replay (same ordering token): accepted, no state change.
+		const replay = workspaceAt('2026-09-10T12:00:00.000Z', { instrumentId: 'FXT-B' });
+		expect(
+			(await server.dispatch('act.saveWorkspace', serializeWorkspaceInstance(replay))).ok
+		).toBe(true);
+		const newer = workspaceAt('2026-09-10T12:00:01.000Z', { instrumentId: 'FXT-C' });
+		expect((await server.dispatch('act.saveWorkspace', serializeWorkspaceInstance(newer))).ok).toBe(
+			true
+		);
+		const restored = await server.readWorkspace();
+		expect(restored.state.instrumentId).toBe('FXT-C');
+		await server.close();
+	});
+
+	it('refuses to overwrite a stored record this build cannot parse (no downgrade)', async () => {
+		// First run creates the schema and closes cleanly.
+		const bootstrap = createAppServer();
+		await bootstrap.dispatch(
+			'act.saveWorkspace',
+			serializeWorkspaceInstance(workspaceUpdate({ instrumentId: 'FXT-A' }))
+		);
+		await bootstrap.close();
+
+		// A future build's record is forced directly into the SQLite store
+		// (bypassing every contract, exactly as a forward-compatible writer
+		// would leave it).
+		const db = new DatabaseSync(process.env.TRADING_OS_DB_PATH!);
+		db.prepare(`UPDATE appdata_workspace_instances SET data = ? WHERE identity = 'default'`).run(
+			JSON.stringify({
+				id: 'default',
+				schema: 'trading.workspace-instance@99',
+				state: {
+					instrumentId: 'FXT-Z',
+					timeframeId: '1h',
+					layoutPreset: 'inspect',
+					watchlistVisible: false
+				},
+				updatedAt: '2099-01-01T00:00:00.000Z'
+			})
+		);
+		db.close();
+
+		// Reads fail safe to the documented default…
+		const server = createAppServer();
+		const read = await server.readWorkspace();
+		expect(read.state.instrumentId).toBe('FXT-A');
+		// …and saves REFUSE to destroy the future-schema record.
+		const refused = await server.dispatch(
+			'act.saveWorkspace',
+			serializeWorkspaceInstance(workspaceUpdate({ instrumentId: 'FXT-B' }))
+		);
+		expect(refused.ok).toBe(false);
+		if (refused.ok) throw new Error('expected a structured refusal');
+		expect(refused.code).toBe('SCHEMA_CONFLICT');
+
+		// The future record is untouched on disk.
+		const verify = new DatabaseSync(process.env.TRADING_OS_DB_PATH!);
+		const row = verify
+			.prepare(`SELECT data FROM appdata_workspace_instances WHERE identity = 'default'`)
+			.get() as {
+			data: string;
+		};
+		verify.close();
+		expect(JSON.parse(row.data).schema).toBe('trading.workspace-instance@99');
+		await server.close();
 	});
 });
