@@ -6,7 +6,9 @@
 	"description": "Trading OS market-data layer: deterministic seeded fixture bars implementing the trading-domain MarketDataPort. No live providers, no brokers, no persistence at T1.",
 	"exports": {
 		".": "./src/index.ts",
-		"./method-store": "./src/method-store.ts"
+		"./method-store": "./src/method-store.ts",
+		"./evaluation-store": "./src/evaluation-store.ts",
+		"./evaluation-fixture": "./src/evaluation-fixture.ts"
 	},
 	"scripts": {
 		"typecheck": "tsc -p tsconfig.json",

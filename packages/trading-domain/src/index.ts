@@ -30,3 +30,4 @@ export {
 	type WorkspaceLayoutPreset,
 	type WorkspaceParseResult
 } from './workspace-instance.ts';
+export * from './evaluation.ts';

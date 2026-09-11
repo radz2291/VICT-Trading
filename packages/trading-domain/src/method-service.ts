@@ -33,6 +33,7 @@ export function parseMethodCommand(input: unknown): MethodCommand {
 	const fields: Record<string, string[]> = {
 		list: [],
 		get: ['methodId'],
+		version: ['versionId'],
 		compare: ['leftId', 'rightId'],
 		profile: ['workspaceId'],
 		create: ['requestId', 'name'],
@@ -196,6 +197,12 @@ export function createMethodService(
 						break;
 					case 'profile':
 						result = { kind: 'profile', profile: tx.getProfile(command.workspaceId) };
+						break;
+					case 'version':
+						result = {
+							kind: 'detail',
+							detail: detail(tx, required(tx.getVersion(command.versionId)).methodId)
+						};
 						break;
 					case 'compare': {
 						const left = required(tx.getVersion(command.leftId));

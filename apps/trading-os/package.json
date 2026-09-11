@@ -13,6 +13,7 @@
 		"test": "vitest run --project app"
 	},
 	"dependencies": {
+		"@trading-os/trading-capabilities": "0.1.0",
 		"@trading-os/trading-data": "0.1.0",
 		"@trading-os/trading-domain": "0.1.0",
 		"@trading-os/trading-surfaces": "0.1.0",
@@ -20,8 +21,8 @@
 		"@victframework/application": "0.1.1",
 		"@victframework/contracts": "0.1.1",
 		"@victframework/renderer-svelte": "0.1.1",
-		"@victframework/sdk": "0.1.1",
-		"@trading-os/trading-capabilities": "0.1.0"
+		"@victframework/runtime": "0.1.1",
+		"@victframework/sdk": "0.1.1"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-node": "^5.2.12",

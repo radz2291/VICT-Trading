@@ -5,7 +5,8 @@
 	"type": "module",
 	"description": "Versioned definition-only capability authoring catalog. Evaluation begins in T3.",
 	"exports": {
-		".": "./src/index.ts"
+		".": "./src/index.ts",
+		"./calculations": "./src/calculations.ts"
 	},
 	"engines": {
 		"node": ">=22.13.0"

@@ -12,6 +12,7 @@ import {
 	parseVersion,
 	parseProfile,
 	parseMethodReply,
+	parseMethodCommand,
 	type MethodRepository,
 	type MethodTransaction,
 	type RequestReceipt
@@ -60,7 +61,28 @@ export function createSqliteMethodRepository(
 	function decode<T>(row: unknown, parse: (v: unknown) => T): T | null {
 		if (!row) return null;
 		try {
-			return parse(JSON.parse((row as { data: string }).data));
+			const columns = row as Record<string, unknown>;
+			const parsed = parse(JSON.parse(String(columns.data)));
+			const value = parsed as Record<string, unknown>;
+			const mapping: Record<string, string> = {
+				id: 'id',
+				method_id: 'methodId',
+				number: 'number',
+				revision: 'revision',
+				workspace_id: 'workspaceId',
+				version_id: 'methodVersionId'
+			};
+			for (const [column, field] of Object.entries(mapping)) {
+				if (Object.hasOwn(columns, column) && columns[column] !== value[field])
+					throw new MethodError('INVALID_RECORD');
+			}
+			if (
+				Object.hasOwn(columns, 'source_id') &&
+				columns.source_id !==
+					(value.provenance as { sourceVersionId: string | null }).sourceVersionId
+			)
+				throw new MethodError('INVALID_RECORD');
+			return parsed;
 		} catch (error) {
 			if (error instanceof MethodError && error.code === 'UNSUPPORTED_SCHEMA') throw error;
 			throw new MethodError('INVALID_RECORD');
@@ -77,28 +99,28 @@ export function createSqliteMethodRepository(
 	const tx: MethodTransaction = {
 		listMethods: () =>
 			db
-				.prepare('SELECT data FROM appdata_methods ORDER BY id')
+				.prepare('SELECT * FROM appdata_methods ORDER BY id')
 				.all()
 				.map((row) => decode(row, parseMethod)!),
 		getMethod: (id) =>
-			decode(db.prepare('SELECT data FROM appdata_methods WHERE id = ?').get(id), parseMethod),
+			decode(db.prepare('SELECT * FROM appdata_methods WHERE id = ?').get(id), parseMethod),
 		getDraft: (id) =>
 			decode(
-				db.prepare('SELECT data FROM appdata_method_drafts WHERE method_id = ?').get(id),
+				db.prepare('SELECT * FROM appdata_method_drafts WHERE method_id = ?').get(id),
 				parseDraft
 			),
 		getVersion: (id) =>
-			decode(db.prepare('SELECT data FROM appdata_method_versions WHERE id = ?').get(id), version),
+			decode(db.prepare('SELECT * FROM appdata_method_versions WHERE id = ?').get(id), version),
 		listVersions: (id) =>
 			db
-				.prepare('SELECT data FROM appdata_method_versions WHERE method_id = ? ORDER BY number')
+				.prepare('SELECT * FROM appdata_method_versions WHERE method_id = ? ORDER BY number')
 				.all(id)
 				.map((row) => decode(row, version)!),
 		getProfile: (id) =>
 			decode(
 				db
 					.prepare(
-						'SELECT data FROM appdata_workspace_profiles WHERE workspace_id = ? ORDER BY revision DESC LIMIT 1'
+						'SELECT * FROM appdata_workspace_profiles WHERE workspace_id = ? ORDER BY revision DESC LIMIT 1'
 					)
 					.get(id),
 				parseProfile
@@ -109,6 +131,9 @@ export function createSqliteMethodRepository(
 				.get(key) as { command: string; reply: string } | undefined;
 			if (!row) return null;
 			try {
+				const command = parseMethodCommand(JSON.parse(row.command));
+				if (!('requestId' in command) || command.requestId !== key)
+					throw new MethodError('INVALID_RECORD');
 				return {
 					key,
 					command: row.command,

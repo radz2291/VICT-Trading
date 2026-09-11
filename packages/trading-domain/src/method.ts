@@ -189,6 +189,7 @@ export interface MethodRepository {
 export type MethodCommand =
 	| { readonly op: 'list' }
 	| { readonly op: 'get'; readonly methodId: string }
+	| { readonly op: 'version'; readonly versionId: string }
 	| { readonly op: 'compare'; readonly leftId: string; readonly rightId: string }
 	| { readonly op: 'profile'; readonly workspaceId: string }
 	| { readonly op: 'create'; readonly requestId: string; readonly name: string }
