@@ -142,7 +142,7 @@ test('create, configure, validate, save, freeze, revise, compare, clone and asso
 	await expect(page.locator('.mw-status')).toContainText('Saved');
 	await page.getByRole('button', { name: 'Validate', exact: true }).click();
 	await expect(
-		page.getByText('Definition valid. Evaluation begins in T3.', { exact: true })
+		page.getByText('Definition valid. Freeze a version to evaluate it.', { exact: true })
 	).toBeVisible();
 	await page.locator('.mw-detail-heading').scrollIntoViewIfNeeded();
 	await screenshot(page, 'editor', info.project.name);
