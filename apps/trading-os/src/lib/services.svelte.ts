@@ -9,6 +9,9 @@
  * cache — no mutable product state lives at module scope).
  */
 import { browser } from '$app/environment';
+import { createAuthoringCatalog } from '@trading-os/trading-capabilities';
+import { createMethodClient } from './method-client';
+import { createMethodWorkspace } from './method-workspace.svelte';
 import {
 	defaultWorkspaceInstance,
 	type Instrument,
@@ -219,6 +222,11 @@ export function createAppServices(initialWorkspace: WorkspaceInstance | null): T
 	const workspace = createWorkspaceService(initialWorkspace ?? defaultWorkspaceInstance());
 	return {
 		marketData,
+		methods: createMethodWorkspace(
+			createMethodClient(),
+			createAuthoringCatalog(),
+			initialWorkspace?.id ?? 'default'
+		),
 		workspace,
 		backgroundOperations: {
 			operations: []

@@ -78,9 +78,20 @@
 	}
 
 	const workspaceState = $derived(services.workspace.state);
+	function protectUnsavedMethod(event: BeforeUnloadEvent): void {
+		const methods = services.methods;
+		if (methods?.dirty || methods?.state === 'saving' || methods?.state === 'conflict') {
+			event.preventDefault();
+			event.returnValue = '';
+		}
+	}
 </script>
 
-<svelte:window onkeydown={onShellKeydown} onpagehide={() => services.workspace.flush()} />
+<svelte:window
+	onkeydown={onShellKeydown}
+	onpagehide={() => services.workspace.flush()}
+	onbeforeunload={protectUnsavedMethod}
+/>
 
 <div
 	class="tos-shell"

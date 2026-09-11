@@ -29,6 +29,12 @@ import {
 	serializeWorkspaceInstance
 } from '@trading-os/trading-domain';
 import { TRADING_SURFACE_IDS } from '@trading-os/trading-surfaces';
+import {
+	methodResource,
+	methodActions,
+	methodCommandContract,
+	methodReplyContract
+} from './method-actions';
 
 /* ------------------------------------------------------------------ */
 /* Resource: persisted Workspace Instances                             */
@@ -112,7 +118,7 @@ const laterStage = (route: string, stage: string): string =>
 export const application = defineApplication({
 	schema: APPLICATION_DEFINITION_SCHEMA_V2,
 	id: 'trading.os',
-	revision: '1',
+	revision: '2',
 	name: 'Trading OS',
 	routes: [
 		// Top level (no group) — the two always-visible entries.
@@ -203,7 +209,7 @@ export const application = defineApplication({
 							role: 'text',
 							id: 't.desk.scope',
 							content:
-								'The Desk shows the live context of the program: workspace, market selection, data truth, and activity. Methods, runs, and evidence arrive in later verified stages.'
+								'The Desk shows the context of the program: workspace, market selection, data truth, and activity. Define Methods in Research. Runs and evidence arrive in later verified stages.'
 						}
 					]
 				}
@@ -280,26 +286,38 @@ export const application = defineApplication({
 					name: 'main',
 					surfaces: [
 						{
-							role: 'text',
-							id: 't.methods.title',
-							level: 2,
-							content: 'Method library'
-						},
-						{
 							role: 'status',
-							id: 'st.methods',
-							value: 'Planned — Stage T2',
-							tones: { 'Planned — Stage T2': 'info' }
+							id: 'st.methods.scope',
+							value: 'Definition available · Evaluation begins in T3',
+							tones: {}
 						},
-						{
-							role: 'text',
-							id: 't.methods.body',
-							level: 3,
-							content: laterStage('Method authoring, versioning, and comparison', 'T2')
-						}
+						{ role: 'component', id: 'cmp.methods', ...TRADING_SURFACE_IDS.methods }
 					]
 				}
-			]
+			],
+			states: {
+				loading: { role: 'text', id: 't.methods.loading', content: 'Loading Method library…' },
+				empty: {
+					role: 'text',
+					id: 't.methods.empty',
+					content: 'No Methods yet. Create your first definition.'
+				},
+				failure: {
+					role: 'text',
+					id: 't.methods.failure',
+					content: 'The Method library is unavailable. Retry to restore confirmed state.'
+				},
+				validation: {
+					role: 'text',
+					id: 't.methods.validation',
+					content: 'Resolve definition diagnostics before freezing.'
+				},
+				stale: {
+					role: 'text',
+					id: 't.methods.stale',
+					content: 'Last-known content. Reload before editing.'
+				}
+			}
 		},
 		{
 			id: 's.backtest',
@@ -509,6 +527,7 @@ export const application = defineApplication({
 		}
 	],
 	actions: [
+		...methodActions,
 		{
 			kind: 'navigation',
 			id: 'act.openMarkets',
@@ -543,8 +562,12 @@ export const application = defineApplication({
 			inputContractRevision: '1'
 		}
 	],
-	resources: [{ resourceId: 'workspace_instances', revision: '1' }],
+	resources: [
+		{ resourceId: 'workspace_instances', revision: '1' },
+		{ resourceId: methodResource.id, revision: '1' }
+	],
 	components: [
+		TRADING_SURFACE_IDS.methods,
 		TRADING_SURFACE_IDS.deskOverview,
 		TRADING_SURFACE_IDS.workspaceControls,
 		TRADING_SURFACE_IDS.marketChart,
@@ -592,11 +615,13 @@ export const WORKSPACE_PRESETS = WORKSPACE_LAYOUT_PRESETS;
 export function compileAppPlan(): ApplicationPlan {
 	const result = compileApplication({
 		application,
-		resources: [workspaceResource],
+		resources: [workspaceResource, methodResource],
 		// The compiler consumes contract REGISTRY ENTRIES (identity only — the
 		// canonical compile boundary never receives executable parse
 		// functions); the data adapter binds the actual contract objects.
-		contracts: [{ id: workspaceRecordContract.id, revision: workspaceRecordContract.revision }],
+		contracts: [workspaceRecordContract, methodCommandContract, methodReplyContract].map(
+			({ id, revision }) => ({ id, revision })
+		),
 		capabilities: [],
 		components: application.components ?? []
 	});

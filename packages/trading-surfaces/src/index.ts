@@ -30,3 +30,4 @@ export {
 	type MarketChartOptions
 } from './market-chart/market-chart-adapter.ts';
 export { resolveMarketChartColors } from './market-chart/chart-colors.ts';
+export type { MethodWorkspaceService, AuthoringState } from './methods/method-workspace.ts';

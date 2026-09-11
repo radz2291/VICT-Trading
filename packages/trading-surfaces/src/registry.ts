@@ -13,9 +13,11 @@ import DeskOverview from './desk/DeskOverview.svelte';
 import WorkspaceControls from './workspace-controls/WorkspaceControls.svelte';
 import MarketChart from './market-chart/MarketChart.svelte';
 import Watchlist from './watchlist/Watchlist.svelte';
+import MethodsWorkspace from './methods/MethodsWorkspace.svelte';
 
 /** The exact surface identities of this registration set (id @ revision). */
 export const TRADING_SURFACE_IDS = {
+	methods: { componentId: 'trading.methods-workspace', revision: '1' },
 	deskOverview: { componentId: 'trading.desk-overview', revision: '1' },
 	workspaceControls: { componentId: 'trading.workspace-controls', revision: '1' },
 	marketChart: { componentId: 'trading.market-chart', revision: '1' },
@@ -31,6 +33,7 @@ export function registerTradingSurfaces(
 	services: TradingServices
 ): void {
 	assertTradingServices(services);
+	registry.register({ ...TRADING_SURFACE_IDS.methods, implementation: MethodsWorkspace });
 	registry.register({ ...TRADING_SURFACE_IDS.deskOverview, implementation: DeskOverview });
 	registry.register({
 		...TRADING_SURFACE_IDS.workspaceControls,

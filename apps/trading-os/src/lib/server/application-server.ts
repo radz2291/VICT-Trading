@@ -6,7 +6,17 @@
  */
 import { join } from 'node:path';
 import { mkdirSync } from 'node:fs';
-import { createSqliteApplicationData } from '@victframework/appdata-sqlite';
+import {
+	createSqliteApplicationData,
+	migrationsFromResources
+} from '@victframework/appdata-sqlite';
+import {
+	createSqliteMethodRepository,
+	METHOD_MIGRATIONS
+} from '@trading-os/trading-data/method-store';
+import { createAuthoringCatalog } from '@trading-os/trading-capabilities';
+import { createMethodService, parseMethodCommand } from '@trading-os/trading-domain';
+import { METHOD_ACTION_OPS } from '$lib/application/method-actions';
 import type { ApplicationDataAdapter, ActionResult } from '@victframework/application';
 import {
 	compileAppPlan,
@@ -23,7 +33,7 @@ import {
 const DEFAULT_DB_PATH = join('.data', 'trading-os.sqlite');
 
 /** The authorization profile of this deployment (server-side only). */
-const GRANTS = ['workspace.read', 'workspace.write'];
+const GRANTS = ['workspace.read', 'workspace.write', 'method.read', 'method.write'];
 
 /** The single trader-owned Workspace Instance identity for T1. */
 export const DEFAULT_WORKSPACE_ID = 'default';
@@ -35,11 +45,15 @@ export function createAppServer() {
 	const dbPath = process.env.TRADING_OS_DB_PATH ?? DEFAULT_DB_PATH;
 	// Ensure the database directory exists (the adapter never creates parents).
 	mkdirSync(join(dbPath, '..'), { recursive: true });
+	const migrations = [migrationsFromResources([workspaceResource], 1), ...METHOD_MIGRATIONS];
 	const data: ApplicationDataAdapter = createSqliteApplicationData({
 		path: dbPath,
 		resources: [workspaceResource],
-		contracts: [workspaceRecordContract]
+		contracts: [workspaceRecordContract],
+		migrations
 	});
+	const methods = createSqliteMethodRepository(dbPath, migrations);
+	const methodService = createMethodService(methods, createAuthoringCatalog());
 
 	async function readWorkspaceRecord(): Promise<
 		| { readonly ok: true; readonly instance: WorkspaceInstance }
@@ -140,6 +154,26 @@ export function createAppServer() {
 			return { ok: false, code: 'UNKNOWN_ACTION', message: 'The action is not declared.' };
 		}
 		try {
+			if (Object.hasOwn(METHOD_ACTION_OPS, actionId)) {
+				const permission = action.kind === 'query' ? 'method.read' : 'method.write';
+				if (!GRANTS.includes(permission))
+					return { ok: false, code: 'DENIED', message: 'This action is not permitted.' };
+				let command;
+				try {
+					command = parseMethodCommand(input);
+				} catch {
+					return await methodService.execute(input);
+				}
+				const allowed: readonly string[] =
+					METHOD_ACTION_OPS[actionId as keyof typeof METHOD_ACTION_OPS];
+				if (!allowed.includes(command.op))
+					return {
+						ok: false,
+						code: 'INVALID_REQUEST',
+						message: 'The command does not match the declared action.'
+					};
+				return await methodService.execute(command);
+			}
 			if (action.id === 'act.saveWorkspace') {
 				const contractResult = workspaceRecordContract.parse(input);
 				if (!contractResult.ok) {
@@ -195,6 +229,7 @@ export function createAppServer() {
 		readWorkspace,
 		loadRoute,
 		async close(): Promise<void> {
+			methods.close();
 			(data as { close?: () => void }).close?.();
 		}
 	};

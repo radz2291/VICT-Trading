@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { compileAppPlan, application, workspaceResource } from '$lib/application/definition';
 import { TRADING_SURFACE_IDS } from '@trading-os/trading-surfaces';
+import { METHOD_ACTION_OPS } from './method-actions';
 
 function renderedNavigation(plan: ReturnType<typeof compileAppPlan>): {
 	group: string;
@@ -86,7 +87,7 @@ describe('the canonical Application Definition', () => {
 
 	it('declares safe states on data-dependent screens', () => {
 		const plan = compileAppPlan();
-		for (const screenId of ['s.desk', 's.markets']) {
+		for (const screenId of ['s.desk', 's.markets', 's.methods']) {
 			const screen = plan.screens[screenId];
 			expect(screen?.states?.loading, `${screenId} loading`).toBeTruthy();
 			expect(screen?.states?.empty, `${screenId} empty`).toBeTruthy();
@@ -94,14 +95,17 @@ describe('the canonical Application Definition', () => {
 		}
 	});
 
-	it('uses only real T1 actions (navigation + workspace persistence)', () => {
+	it('preserves T1 actions and declares only the implemented T2 authoring actions', () => {
 		const plan = compileAppPlan();
-		expect(Object.keys(plan.actions).sort()).toEqual([
-			'act.createWorkspace',
-			'act.openMarkets',
-			'act.queryWorkspaces',
-			'act.saveWorkspace'
-		]);
+		expect(Object.keys(plan.actions).sort()).toEqual(
+			[
+				'act.createWorkspace',
+				'act.openMarkets',
+				'act.queryWorkspaces',
+				'act.saveWorkspace',
+				...Object.keys(METHOD_ACTION_OPS)
+			].sort()
+		);
 	});
 
 	it('binds the workspace resource at revision 1 only', () => {
