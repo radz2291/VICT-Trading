@@ -30,6 +30,8 @@
 		"test:e2e": "playwright test",
 		"verify:registry": "node scripts/verify-registry-resolution.mjs",
 		"verify:client-boundary": "node scripts/check-client-boundary.mjs",
+		"verify:client-negative": "node scripts/probe-client-boundary.mjs",
+		"verify:t3-probe": "node --experimental-transform-types scripts/probe-t3.ts",
 		"scaffold:evidence": "node scripts/scaffold-evidence.mjs",
 		"dev": "npm run dev -w trading-os-app",
 		"preview": "npm run preview -w trading-os-app",

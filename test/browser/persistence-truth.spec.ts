@@ -8,7 +8,7 @@
  * Every step toggles to the layout that is NOT currently active: clicking
  * an already-selected radio fires no `change` event, so no save would run.
  *
- * Screenshots are written to gitignored `test-results/evidence/` — a test
+ * Screenshots are written to gitignored `test-results/t3/evidence/` — a test
  * run never mutates committed evidence. The closure snapshots in
  * `docs/evidence/t1-closure/` were captured by this suite at closure time
  * and committed once.
@@ -55,7 +55,7 @@ test.describe('persistence truth (save channel)', () => {
 		await expect(strip).toHaveText(/Workspace saved/);
 		await toggleLayout(page);
 		await expect(strip).toHaveAttribute('data-tos-save', 'saved', { timeout: 10_000 });
-		await page.screenshot({ path: 'test-results/evidence/desktop-markets-saved.png' });
+		await page.screenshot({ path: 'test-results/t3/evidence/desktop-markets-saved.png' });
 	});
 
 	test('unreachable saves turn the strip truthfully negative — then recover', async ({ page }) => {
@@ -67,7 +67,7 @@ test.describe('persistence truth (save channel)', () => {
 		const strip = page.locator('[data-tos-save]');
 		await expect(strip).toHaveAttribute('data-tos-save', 'failed', { timeout: 15_000 });
 		await expect(strip).toHaveText(/Save failed — not persisted/);
-		await page.screenshot({ path: 'test-results/evidence/desktop-markets-save-failed.png' });
+		await page.screenshot({ path: 'test-results/t3/evidence/desktop-markets-save-failed.png' });
 		// Recovery: a working server plus a genuine change re-arms the channel.
 		await page.unroute('**/api/act');
 		await toggleLayout(page);
@@ -112,6 +112,6 @@ test.describe('persistence truth (save channel)', () => {
 		// Ctrl K — never the macOS symbol). Functional Ctrl+K is proven by the
 		// desktop suite.
 		await expect(page.locator('.tos-strip__palette')).toHaveText('Ctrl K');
-		await page.screenshot({ path: 'test-results/evidence/desktop-desk.png' });
+		await page.screenshot({ path: 'test-results/t3/evidence/desktop-desk.png' });
 	});
 });

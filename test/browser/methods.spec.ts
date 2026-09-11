@@ -56,8 +56,8 @@ async function open(page: Page, name: string) {
 	await expect(page.locator('.mw-detail-heading h3')).toHaveText(name);
 }
 async function screenshot(page: Page, name: string, project: string) {
-	mkdirSync('test-results/evidence/t2', { recursive: true });
-	await page.screenshot({ path: `test-results/evidence/t2/${project}-${name}.png` });
+	mkdirSync('test-results/t3/evidence/t2', { recursive: true });
+	await page.screenshot({ path: `test-results/t3/evidence/t2/${project}-${name}.png` });
 }
 async function noOverflow(page: Page) {
 	expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);

@@ -5,6 +5,7 @@ const baseURL = `http://127.0.0.1:${PORT}`;
 
 export default defineConfig({
 	testDir: './test/browser',
+	outputDir: './test-results/t3/output',
 	timeout: 60_000,
 	expect: { timeout: 10_000 },
 	fullyParallel: false,

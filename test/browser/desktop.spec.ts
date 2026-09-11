@@ -4,7 +4,7 @@
  * (real chart engine, crosshair readout, persisted layout), the command
  * palette, reload continuity, and an axe accessibility scan.
  *
- * Screenshots are written to gitignored `test-results/evidence/`: a test
+ * Screenshots are written to gitignored `test-results/t3/evidence/`: a test
  * run must never mutate committed evidence (the historical snapshots in
  * `docs/evidence/t1/` are byte-frozen).
  */
@@ -79,7 +79,7 @@ test.describe('Trading OS desktop (1440×900)', () => {
 		const body = await page.locator('body').innerText();
 		expect(body).not.toMatch(/win rate|profit factor|p&l|equity curve|signal/i);
 		await noHorizontalOverflow(page);
-		await page.screenshot({ path: 'test-results/evidence/desktop-desk.png', fullPage: false });
+		await page.screenshot({ path: 'test-results/t3/evidence/desktop-desk.png', fullPage: false });
 	});
 
 	test('"Open Markets" navigates through the declared action', async ({ page }) => {
@@ -117,7 +117,10 @@ test.describe('Trading OS desktop (1440×900)', () => {
 		await expect(watchlist).toBeVisible();
 		await expect(watchlist.getByRole('button', { name: /FXT-A/ })).toBeVisible();
 		await expect(watchlist.getByRole('button', { name: /FXT-F/ })).toBeVisible();
-		await page.screenshot({ path: 'test-results/evidence/desktop-markets.png', fullPage: false });
+		await page.screenshot({
+			path: 'test-results/t3/evidence/desktop-markets.png',
+			fullPage: false
+		});
 	});
 
 	test('layout presets genuinely persist across a full reload', async ({ page }) => {
@@ -150,7 +153,7 @@ test.describe('Trading OS desktop (1440×900)', () => {
 			timeout: 15_000
 		});
 		await page.screenshot({
-			path: 'test-results/evidence/desktop-markets-inspect.png',
+			path: 'test-results/t3/evidence/desktop-markets-inspect.png',
 			fullPage: false
 		});
 	});

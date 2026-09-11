@@ -14,3 +14,8 @@
 # formatted. New independent audit reports must be added here when committed.
 docs/audit/*.md
 docs/report/TRADING-OS-T1-INDEPENDENT-VERIFICATION.md
+docs/report/*T1*.md
+docs/report/*T2*.md
+docs/architecture/TRADING-OS-T2-METHOD-SYSTEM.md
+docs/architecture/TRADING-OS-SURFACE-ARCHITECTURE.md
+docs/TRADING-OS-PRODUCT-CONSTITUTION.md

@@ -32,6 +32,6 @@ test.describe('Trading OS laptop (1024×768)', () => {
 		expect(chartBox).not.toBeNull();
 		// Side-by-side arrangement: the watchlist sits to the right of the chart.
 		expect(box!.x).toBeGreaterThan(chartBox!.x + chartBox!.width - 10);
-		await page.screenshot({ path: 'test-results/evidence/laptop-markets.png', fullPage: false });
+		await page.screenshot({ path: 'test-results/t3/evidence/laptop-markets.png', fullPage: false });
 	});
 });

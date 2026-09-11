@@ -11,6 +11,12 @@ const CLIENT = join(ROOT, 'apps', 'trading-os', '.svelte-kit', 'output', 'client
 const SERVER = join(ROOT, 'apps', 'trading-os', '.svelte-kit', 'output', 'server');
 
 const MARKERS = [
+	'appdata_market_series',
+	'appdata_market_bars',
+	'appdata_evaluation_runs',
+	'appdata_evaluation_results',
+	'createSqliteEvaluationRepository',
+	'VICT_RUNTIME_ACTIVATION_NOT_FOUND',
 	'appdata_method_versions',
 	'appdata_workspace_profiles',
 	'createSqliteMethodRepository',

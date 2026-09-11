@@ -47,7 +47,7 @@ function packageOf(specifier: string): string | null {
 
 function srcFiles(pkgDir: string): string[] {
 	return listFiles(`${ROOT}/${pkgDir}/src`, ['.ts', '.js', '.svelte']).filter(
-		(file) => !file.endsWith('.d.ts')
+		(file) => !file.endsWith('.d.ts') && !file.endsWith('.test.ts') && !file.includes('/__tests__/')
 	);
 }
 
@@ -81,7 +81,7 @@ describe('package boundaries (T0 audit §4 adjacency)', () => {
 			for (const specifier of importsOf(file)) {
 				const pkg = packageOf(specifier);
 				if (pkg === null) continue;
-				const allowed = file.endsWith('/method-store.ts')
+				const allowed = /\/(method-store|evaluation-store)\.ts$/.test(file)
 					? ['@trading-os/trading-domain', '@victframework/appdata-sqlite', 'node:crypto']
 					: ['@trading-os/trading-domain'];
 				expect(allowed.includes(pkg), `${file} imports ${specifier}`).toBe(true);
@@ -197,16 +197,18 @@ describe('package boundaries (T0 audit §4 adjacency)', () => {
 describe('T2 permanent boundaries and evidence integrity', () => {
 	it('keeps the server adapter out of the browser barrel and browser application modules', () => {
 		expect(readFileSync(`${ROOT}/packages/trading-data/src/index.ts`, 'utf8')).not.toMatch(
-			/method-store|sqlite|node:/
+			/method-store|evaluation-store|evaluation-fixture|sqlite|node:/
 		);
 		for (const file of srcFiles('apps/trading-os').filter((f) => !f.includes('/server/'))) {
 			for (const spec of importsOf(file))
-				expect(spec).not.toMatch(/trading-data\/method-store|appdata-sqlite|node:/);
+				expect(spec).not.toMatch(
+					/trading-data\/(?:method-store|evaluation-store|evaluation-fixture)|trading-capabilities\/calculations|appdata-sqlite|@victframework\/runtime|node:/
+				);
 		}
 	});
-	it('contains definition contracts without market-evaluation or network implementations', () => {
+	it('keeps authoring contracts separate from pure calculations and forbids network or mode code', () => {
 		for (const file of [
-			...srcFiles('packages/trading-capabilities'),
+			...srcFiles('packages/trading-capabilities').filter((f) => f.endsWith('/index.ts')),
 			...srcFiles('packages/trading-domain').filter((f) => f.includes('/method'))
 		]) {
 			const code = readFileSync(file, 'utf8');
@@ -239,12 +241,13 @@ describe('T2 permanent boundaries and evidence integrity', () => {
 			[
 				'ls-tree',
 				'-r',
-				'ad860465bf404b7bd1f4359c712f7f6bdf52a6d1',
+				'6805b99abf38a1da0a989dc5b69c93beaedfbe86',
 				'docs/audit',
 				'docs/report',
 				'docs/evidence',
 				'docs/TRADING-OS-PRODUCT-CONSTITUTION.md',
-				'docs/architecture/TRADING-OS-SURFACE-ARCHITECTURE.md'
+				'docs/architecture/TRADING-OS-SURFACE-ARCHITECTURE.md',
+				'docs/architecture/TRADING-OS-T2-METHOD-SYSTEM.md'
 			],
 			{ cwd: ROOT, encoding: 'utf8' }
 		)
@@ -269,4 +272,19 @@ describe('T2 permanent boundaries and evidence integrity', () => {
 		for (const file of listFiles(`${ROOT}/test/browser`, ['.ts']))
 			expect(readFileSync(file, 'utf8')).not.toMatch(/path:\s*['"`]docs\/evidence/);
 	});
+});
+
+it('the canonical calculation core has no clock, randomness, I/O or dynamic code', () => {
+	const code = readFileSync(`${ROOT}/packages/trading-capabilities/src/evaluator.ts`, 'utf8');
+	const forbidden =
+		/\b(?:Date|fetch|WebSocket|XMLHttpRequest|eval|Function|setTimeout)\b|Math\.random|crypto\.|node:/;
+	expect(code).not.toMatch(forbidden);
+	for (const control of [
+		'Date.now()',
+		'Math.random()',
+		'fetch(url)',
+		'new Function(code)',
+		"import 'node:fs'"
+	])
+		expect(control).toMatch(forbidden);
 });

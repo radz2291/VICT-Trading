@@ -13,7 +13,7 @@
  */
 import { readdirSync, readFileSync, realpathSync, existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
-import { join } from 'node:path';
+import { join, relative, isAbsolute } from 'node:path';
 
 const ROOT = process.cwd();
 const VICT_CHECKOUT_FRAGMENT = '260831-VCT-02';
@@ -104,6 +104,8 @@ for (const [path, entry] of lockEntries) {
 
 // 3. Installed realpaths.
 const consumed = [
+	'runtime',
+	'kernel',
 	'application',
 	'appdata-sqlite',
 	'contracts',
@@ -118,6 +120,10 @@ for (const pkg of consumed) {
 		continue;
 	}
 	const real = realpathSync(join(ROOT, 'node_modules', '@victframework', pkg));
+	const local = relative(realpathSync(join(ROOT, 'node_modules')), real);
+	if (local.startsWith('..') || isAbsolute(local)) {
+		problems.push(`@victframework/${pkg} realpath is outside this consumer's node_modules`);
+	}
 	if (real.includes(VICT_CHECKOUT_FRAGMENT)) {
 		problems.push(`@victframework/${pkg} realpaths into the local VICT checkout: ${real}`);
 	}
@@ -137,13 +143,22 @@ try {
 			continue;
 		}
 		const metadata = await response.json();
-		if (metadata['dist-tags']?.latest !== EXPECTED_VERSION) {
-			problems.push(
-				`registry: @victframework/${pkg} latest is ${metadata['dist-tags']?.latest}, expected ${EXPECTED_VERSION}`
-			);
-		}
-		if (metadata.versions?.[EXPECTED_VERSION] === undefined) {
+		// A later public release must not force this pinned consumer to upgrade.
+		const published = metadata.versions?.[EXPECTED_VERSION];
+		if (published === undefined) {
 			problems.push(`registry: @victframework/${pkg} has no ${EXPECTED_VERSION}`);
+		} else {
+			if (published.name !== `@victframework/${pkg}` || published.version !== EXPECTED_VERSION)
+				problems.push(`registry: @victframework/${pkg} exact-version identity mismatch`);
+			const installedLock = lock.packages[`node_modules/@victframework/${pkg}`];
+			if (
+				installedLock &&
+				(published.dist?.integrity !== installedLock.integrity ||
+					published.dist?.tarball !== installedLock.resolved)
+			)
+				problems.push(
+					`registry: @victframework/${pkg} public tarball/integrity differs from the lockfile`
+				);
 		}
 		lines.push(`@victframework/${pkg}@${EXPECTED_VERSION}`);
 	}
