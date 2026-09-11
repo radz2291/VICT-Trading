@@ -11,6 +11,10 @@ const CLIENT = join(ROOT, 'apps', 'trading-os', '.svelte-kit', 'output', 'client
 const SERVER = join(ROOT, 'apps', 'trading-os', '.svelte-kit', 'output', 'server');
 
 const MARKERS = [
+	'appdata_method_versions',
+	'appdata_workspace_profiles',
+	'createSqliteMethodRepository',
+	'node:crypto',
 	'node:sqlite',
 	'node:fs',
 	'node:path',
@@ -45,6 +49,22 @@ function scan(dir) {
 }
 
 const clientHits = scan(CLIENT);
+// SvelteKit legitimately uses sessionStorage for scroll/history restoration. Ban web
+// storage in product source instead: Method/Workspace truth must use server adapters.
+for (const source of [
+	join(ROOT, 'apps', 'trading-os', 'src'),
+	...['trading-domain', 'trading-data', 'trading-capabilities', 'trading-surfaces'].map((name) =>
+		join(ROOT, 'packages', name, 'src')
+	)
+]) {
+	for (const file of listFiles(source)) {
+		if (!/\.(ts|svelte|js)$/.test(file) || file.includes('__tests__') || file.endsWith('.test.ts'))
+			continue;
+		const code = readFileSync(file, 'utf8').replace(/\/\*[\s\S]*?\*\/|\/\/[^\r\n]*/g, '');
+		if (/\b(?:localStorage|sessionStorage)\b/.test(code))
+			clientHits.push(`${file} uses product web storage instead of the authoritative server`);
+	}
+}
 if (clientHits.length > 0) {
 	console.error('CLIENT BOUNDARY VIOLATION — Node-only code reached the browser bundle:');
 	for (const hit of clientHits) console.error(` - ${hit}`);

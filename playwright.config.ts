@@ -23,7 +23,7 @@ export default defineConfig({
 		reuseExistingServer: false,
 		timeout: 180_000,
 		env: {
-			TRADING_OS_DB_PATH: './.data/trading-os-e2e.sqlite'
+			TRADING_OS_DB_PATH: `./.data/trading-os-e2e-${process.pid}-${Date.now()}.sqlite`
 		}
 	},
 	projects: [

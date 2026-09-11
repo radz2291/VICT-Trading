@@ -3,7 +3,9 @@
  * T0 must hold in the actual source. These tests read the repository files
  * directly, so a violation fails CI, not just review.
  */
-import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs';
+import { readFileSync, readdirSync, statSync, existsSync, realpathSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 
@@ -57,6 +59,7 @@ describe('package boundaries (T0 audit §4 adjacency)', () => {
 		expect(files.length).toBeGreaterThan(0);
 		for (const file of files) {
 			for (const specifier of importsOf(file)) {
+				expect(packageOf(specifier), `${file} must be dependency-free`).toBeNull();
 				for (const forbidden of FORBIDDEN_IN_DOMAIN) {
 					expect(specifier.includes(forbidden), `${file} must not import ${specifier}`).toBe(false);
 				}
@@ -72,30 +75,31 @@ describe('package boundaries (T0 audit §4 adjacency)', () => {
 		expect(manifest.peerDependencies).toBeUndefined();
 	});
 
-	it('trading-data imports only the trading domain', () => {
+	it('trading-data isolates the public SQLite foundation and Node crypto to its server adapter', () => {
 		const files = srcFiles('packages/trading-data');
 		for (const file of files) {
 			for (const specifier of importsOf(file)) {
 				const pkg = packageOf(specifier);
 				if (pkg === null) continue;
-				expect(['@trading-os/trading-domain'].includes(pkg), `${file} imports ${specifier}`).toBe(
-					true
-				);
+				const allowed = file.endsWith('/method-store.ts')
+					? ['@trading-os/trading-domain', '@victframework/appdata-sqlite', 'node:crypto']
+					: ['@trading-os/trading-domain'];
+				expect(allowed.includes(pkg), `${file} imports ${specifier}`).toBe(true);
 			}
 		}
 	});
 
-	it('trading-capabilities is imported by nothing and imports nothing (intentionally minimal at T1)', () => {
+	it('trading-capabilities imports only domain authoring contracts and is composed only by the app', () => {
 		const capabilities = srcFiles('packages/trading-capabilities');
 		for (const file of capabilities) {
 			for (const specifier of importsOf(file)) {
-				expect(packageOf(specifier)).toBeNull();
+				expect([null, '@trading-os/trading-domain']).toContain(packageOf(specifier));
 			}
 		}
 		const consumers = [
-			...srcFiles('apps/trading-os'),
 			...srcFiles('packages/trading-surfaces'),
-			...srcFiles('packages/trading-data')
+			...srcFiles('packages/trading-data'),
+			...srcFiles('packages/trading-domain')
 		];
 		for (const file of consumers) {
 			for (const specifier of importsOf(file)) {
@@ -148,6 +152,7 @@ describe('package boundaries (T0 audit §4 adjacency)', () => {
 			dependencies: Record<string, string>;
 		};
 		for (const required of [
+			'@trading-os/trading-capabilities',
 			'@trading-os/trading-domain',
 			'@trading-os/trading-data',
 			'@trading-os/trading-surfaces',
@@ -186,5 +191,82 @@ describe('package boundaries (T0 audit §4 adjacency)', () => {
 				}
 			}
 		}
+	});
+});
+
+describe('T2 permanent boundaries and evidence integrity', () => {
+	it('keeps the server adapter out of the browser barrel and browser application modules', () => {
+		expect(readFileSync(`${ROOT}/packages/trading-data/src/index.ts`, 'utf8')).not.toMatch(
+			/method-store|sqlite|node:/
+		);
+		for (const file of srcFiles('apps/trading-os').filter((f) => !f.includes('/server/'))) {
+			for (const spec of importsOf(file))
+				expect(spec).not.toMatch(/trading-data\/method-store|appdata-sqlite|node:/);
+		}
+	});
+	it('contains definition contracts without market-evaluation or network implementations', () => {
+		for (const file of [
+			...srcFiles('packages/trading-capabilities'),
+			...srcFiles('packages/trading-domain').filter((f) => f.includes('/method'))
+		]) {
+			const code = readFileSync(file, 'utf8');
+			expect(code).not.toMatch(
+				/\b(fetch|WebSocket|evaluate|backtest|simulateFill|submitOrder)\s*\(/
+			);
+		}
+		for (const file of srcFiles('packages/trading-surfaces').filter((f) => f.includes('/methods/')))
+			expect(readFileSync(file, 'utf8')).not.toMatch(
+				/analysis\.range|analysis\.mean|SS Breakout|trading-capabilities/
+			);
+	});
+	it('keeps VICT exact and public-registry-resolved, with consumer-local realpaths', () => {
+		const lock = JSON.parse(readFileSync(`${ROOT}/package-lock.json`, 'utf8'));
+		for (const [name, value] of Object.entries(lock.packages) as [
+			string,
+			{ version?: string; resolved?: string; link?: boolean }
+		][]) {
+			if (!name.startsWith('node_modules/@victframework/')) continue;
+			expect(value.version).toBe('0.1.1');
+			expect(value.resolved).toMatch(/^https:\/\/registry\.npmjs\.org\//);
+			expect(value.link).not.toBe(true);
+			expect(realpathSync(`${ROOT}/${name}`).toLowerCase()).toContain('node_modules');
+			expect(realpathSync(`${ROOT}/${name}`)).not.toContain('260831-VCT-02');
+		}
+	});
+	it('preserves every T0/T1 evidence record byte-for-byte against the closed baseline', () => {
+		const files = execFileSync(
+			'git',
+			[
+				'ls-tree',
+				'-r',
+				'ad860465bf404b7bd1f4359c712f7f6bdf52a6d1',
+				'docs/audit',
+				'docs/report',
+				'docs/evidence',
+				'docs/TRADING-OS-PRODUCT-CONSTITUTION.md',
+				'docs/architecture/TRADING-OS-SURFACE-ARCHITECTURE.md'
+			],
+			{ cwd: ROOT, encoding: 'utf8' }
+		)
+			.trim()
+			.split('\n');
+		for (const entry of files) {
+			const [metadata, file] = entry.split('\t');
+			const expected = metadata!.split(' ')[2];
+			const bytes = readFileSync(`${ROOT}/${file}`);
+			const actual = createHash('sha1')
+				.update(`blob ${bytes.length}\0`)
+				.update(bytes)
+				.digest('hex');
+			expect({ file, blob: actual }).toEqual({ file, blob: expected });
+		}
+	});
+	it('tracks no runtime database, secret, cache or build output; tests never overwrite evidence', () => {
+		const tracked = execFileSync('git', ['ls-files'], { cwd: ROOT, encoding: 'utf8' });
+		expect(tracked).not.toMatch(
+			/(?:^|\n)(?:.*\/)?(?:\.env(?:\.|$)|node_modules\/|\.data\/|test-results\/|build\/|.*\.(?:sqlite|db)(?:-wal|-shm)?$)/m
+		);
+		for (const file of listFiles(`${ROOT}/test/browser`, ['.ts']))
+			expect(readFileSync(file, 'utf8')).not.toMatch(/path:\s*['"`]docs\/evidence/);
 	});
 });
