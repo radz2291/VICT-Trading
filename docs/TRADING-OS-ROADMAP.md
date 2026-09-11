@@ -161,11 +161,53 @@ screenshot evidence in `docs/evidence/t1/`)_
 
 ## T2 — Method and Capability Foundation
 
-**Status: implemented — independent verification required; not formally closed.**
-The Methods workspace now authors, validates, freezes, revises, clones and compares
-definitions, with independent Workspace Profile references. See
+**Status: implemented, independently verified, and formally closed.**
+The Methods workspace authors, validates, freezes, revises, clones and compares definitions,
+with independent Workspace Profile references. See
 `docs/architecture/TRADING-OS-T2-METHOD-SYSTEM.md` and
-`docs/report/TRADING-OS-T2-METHOD-SYSTEM-IMPLEMENTATION.md`. T3 has not begun.
+`docs/report/TRADING-OS-T2-METHOD-SYSTEM-IMPLEMENTATION.md`.
+
+Implementation lineage, strictly linear from the T1 formal closure
+`ad860465bf404b7bd1f4359c712f7f6bdf52a6d1`:
+`04ebbbf851057e89e272122a9a6f9a1cf63970a7` (domain, catalog, transactional persistence) →
+`0b98203b095e777f622cad1b21e46be43dbac2ba` (authoring/version workspace) →
+`784498d82441d726fc05d8b512746f17d22b74f0` (lifecycle/restart/browser/architecture evidence —
+final executable tree) → `bb8230e8c5e29520b386288362018bb2ef309639` (architecture,
+implementation report, curated evidence) → `1d372d7f5f76b63918bc1e2fa35d2a21b0367ca2`
+(cleanup-exception record) → `d18aa2101cc6de4d748f4208fb095b8758b37de5` (independent
+verification committed). The independent audit
+(`docs/report/TRADING-OS-T2-INDEPENDENT-VERIFICATION.md`, preserved byte-exactly, committed
+at `d18aa21`) returned, verbatim:
+
+```text
+VERIFIED WITH NON-BLOCKING ISSUES — FORMAL T2 CLOSURE PERMITTED
+TRADING OS T2 INDEPENDENTLY VERIFIED — FORMAL CLOSURE PERMITTED
+TRADING OS T3 HAS NOT BEGUN
+```
+
+T2 is formally closed by the closure record
+(`docs/report/TRADING-OS-T2-CLOSURE.md`), which records the exact lineage, the AV-1…AV-8
+dispositions, the closure decisions, and the verification and preservation results.
+Carried obligations (concise): AV-1 profile-failure wording at the next surface touch;
+AV-2 read-side column/JSON cross-check hardening before any external import, repair,
+multi-user, or deployment boundary; AV-3 the inherited T1 mobile `Ctrl K` clipping (~10 px
+at 390×844 — required correction no later than the next stage's formal closure, preferably
+when shell/mobile UI is next touched); AV-4 disjunction via reusable revision-pinned
+composite capability definitions proven by T3's evaluator; AV-6 UUID readability at the
+next surface touch; AV-7 server-diagnostic surfacing if client/server catalogs can diverge;
+plus the T1 obligations F-3/F-7 (renderer upgrade re-verification gates), F-12
+(`--legacy-peer-deps`), and F-13.
+
+**Workspace Profile boundary (AV-5 decision):** the accepted `trading.workspace-profile@1`
+is an independently revisioned, append-only association between a Workspace and one pinned
+Method Version — **not** the complete governing presentation recommendation of the
+Constitution and Surface Architecture (no panels, instruments, timeframes, arrangements, or
+capability-backed information requirements; no profile-driven workspace opening is claimed
+or implemented). A fuller representation requires an explicit new schema/revision and
+migration with compatibility and presentation-recommendation semantics specified first, and
+is a mandatory gate before T4 implementation begins — or earlier if T3 introduces any
+profile-driven workspace behavior. **`MethodContent@1` is accepted, as independently
+verified, as the T3 foundation without redesign.** T3 has not begun.
 
 **Purpose.** Make methods first-class, versioned, and composable.
 
@@ -195,6 +237,10 @@ atomically with pinned revisions.
 ---
 
 ## T3 — Deterministic Market Data and Evaluation
+
+**Status: permitted — not started.** T2 is formally closed (see
+`docs/report/TRADING-OS-T2-CLOSURE.md`); `MethodContent@1` is the accepted foundation. No T3
+market data, evaluation, jobs, indicators, opportunities, or performance calculations exist.
 
 **Purpose.** One canonical evaluation core over deterministic stored data.
 

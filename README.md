@@ -12,19 +12,27 @@ generic dashboard, and not an autonomous trading bot.
 
 ## Current stage
 
-**T2 — Method System and Authoring Workspace: implemented, pending independent verification.**
-The Methods route now supports named lineages, persistent working drafts, reusable exact-revision
-capabilities, validation, immutable versions, revision, clone, semantic comparison and Workspace
-Profile selection. Definitions are available; evaluation begins in T3. See the
-[T2 architecture](docs/architecture/TRADING-OS-T2-METHOD-SYSTEM.md) and
-[T2 implementation report](docs/report/TRADING-OS-T2-METHOD-SYSTEM-IMPLEMENTATION.md).
+**T2 — Method System and Authoring Workspace: implemented, independently verified, and formally closed.**
+The Methods route supports named lineages, persistent working drafts, reusable exact-revision
+capabilities, validation, immutable versions, revision, clone, semantic comparison and
+Workspace Profile association (an append-only Workspace↔Method-Version reference — not yet a
+full presentation recommendation). The existing app provides Method definition/versioning
+only; evaluation begins in T3. The [T2 architecture](docs/architecture/TRADING-OS-T2-METHOD-SYSTEM.md),
+[T2 implementation report](docs/report/TRADING-OS-T2-METHOD-SYSTEM-IMPLEMENTATION.md),
+[T2 independent verification](docs/report/TRADING-OS-T2-INDEPENDENT-VERIFICATION.md) (verdict:
+**VERIFIED WITH NON-BLOCKING ISSUES — FORMAL T2 CLOSURE PERMITTED**) and
+[T2 closure record](docs/report/TRADING-OS-T2-CLOSURE.md) are the authoritative references for
+the delivered method system.
+
+**T3 — Deterministic Market Data and Evaluation: permitted, not started.** No evaluation,
+historical data engine, backtest, replay, live data, broker, order submission, signals,
+performance evidence or AI has begun.
 
 T1 remains independently verified and formally closed at
 `ad860465bf404b7bd1f4359c712f7f6bdf52a6d1`: the product-owned shell, public VICT navigation,
 fixture Markets chart, command palette and truthful Workspace Instance persistence remain.
-The [closure record](docs/report/TRADING-OS-T1-CLOSURE.md) and
+The [T1 closure record](docs/report/TRADING-OS-T1-CLOSURE.md) and
 [focused re-verification](docs/report/TRADING-OS-T1-CLOSURE-REVERIFICATION.md) are preserved.
-T2 is not formally closed; no market evaluation, broker, backtest, replay, signals or AI exists.
 
 T0 remains the authoritative documentation stage; its records below are
 byte-identical to their audited revisions.
@@ -104,3 +112,7 @@ one-way: VICT never depends on any Trading OS package.
 | [`docs/report/TRADING-OS-T1-INDEPENDENT-VERIFICATION.md`](docs/report/TRADING-OS-T1-INDEPENDENT-VERIFICATION.md)                 | Independent T1 verification: acceptance-matrix verdicts, findings F-1–F-14, adversarial persistence probes, real-browser evidence (byte-preserved)          |
 | [`docs/report/TRADING-OS-T1-CLOSURE.md`](docs/report/TRADING-OS-T1-CLOSURE.md)                                                   | T1 closure record: finding-by-finding disposition, remediation scope and evidence, verification ladder, formal closure status                               |
 | [`docs/report/TRADING-OS-T1-CLOSURE-REVERIFICATION.md`](docs/report/TRADING-OS-T1-CLOSURE-REVERIFICATION.md)                     | Focused independent re-verification of the T1 closure remediation at `dda040a`: persistence-truth probes, evidence-integrity checks, full ladder, verdict   |
+| [`docs/architecture/TRADING-OS-T2-METHOD-SYSTEM.md`](docs/architecture/TRADING-OS-T2-METHOD-SYSTEM.md)                           | T2 method system architecture: vocabulary, lifecycle, canonical identity, capability catalog, persistence, profiles, UI composition, T3 handoff             |
+| [`docs/report/TRADING-OS-T2-METHOD-SYSTEM-IMPLEMENTATION.md`](docs/report/TRADING-OS-T2-METHOD-SYSTEM-IMPLEMENTATION.md)         | T2 implementation report: acceptance matrix, model boundaries, persistence/actions, verification record, evidence inventory, limitations and exclusions     |
+| [`docs/report/TRADING-OS-T2-INDEPENDENT-VERIFICATION.md`](docs/report/TRADING-OS-T2-INDEPENDENT-VERIFICATION.md)                 | Independent T2 verification: acceptance-matrix verdicts, findings AV-1–AV-8, real-browser/SQLite/registry evidence, full ladder, verdict (byte-preserved)   |
+| [`docs/report/TRADING-OS-T2-CLOSURE.md`](docs/report/TRADING-OS-T2-CLOSURE.md)                                                   | T2 closure record: exact lineage, verdict of record, AV-1–AV-8 dispositions, Workspace Profile and rule-composition decisions, carried obligations          |
