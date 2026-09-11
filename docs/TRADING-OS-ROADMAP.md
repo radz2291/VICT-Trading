@@ -161,9 +161,11 @@ screenshot evidence in `docs/evidence/t1/`)_
 
 ## T2 — Method and Capability Foundation
 
-**Status: permitted — not started.** No Method engine, method model,
-capability pack, authoring surface, method vocabulary, signals, or T2
-functionality of any kind exists; no T2 work has begun.
+**Status: implemented — independent verification required; not formally closed.**
+The Methods workspace now authors, validates, freezes, revises, clones and compares
+definitions, with independent Workspace Profile references. See
+`docs/architecture/TRADING-OS-T2-METHOD-SYSTEM.md` and
+`docs/report/TRADING-OS-T2-METHOD-SYSTEM-IMPLEMENTATION.md`. T3 has not begun.
 
 **Purpose.** Make methods first-class, versioned, and composable.
 
@@ -171,11 +173,11 @@ functionality of any kind exists; no T2 work has begun.
 analysis layers, rules, judgment questions, risk requirements, execution
 assumptions, observation requirements, lineage, deterministic identity);
 independently versioned Workspace Profiles referencing compatible Method
-Versions; capability packs in `packages/trading-capabilities` (first reusable
-indicators, session calculations, detectors — pure product-local computation,
-registered and revision-pinned, with governed capability boundaries wrapping
-jobs, not individual calculations; audit §6.1); authoring surfaces composed
-from VICT forms/tabs/dialogs; clone/compare/version flows; capability
+Versions; capability authoring catalog in `packages/trading-capabilities` (reusable
+analysis, rule, session, judgment, risk and execution **definitions only**,
+registered atomically and revision-pinned; calculation/evaluation implementations
+and governed job boundaries remain T3, per the definition-only gate below);
+authoring through the registered VICT custom-surface boundary with native controls; clone/compare/version flows; capability
 discovery and configuration surface (product composition over pack
 metadata).
 

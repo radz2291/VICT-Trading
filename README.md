@@ -12,24 +12,19 @@ generic dashboard, and not an autonomous trading bot.
 
 ## Current stage
 
-**T1 — Platform Shell and Trading-Surface Proof (implemented, independently
-verified, formally closed)**. The product now has a real, locally runnable
-VICT consumer application: a product-owned TradingShell, the canonical
-Application Definition (Desk/Markets plus Research → Practice → Operate →
-Review → System navigation), a Markets workspace with a registered
-`trading.market-chart@1` candlestick-and-volume surface over deterministic
-fixture data, a plan-derived command palette (Ctrl+K), and SQLite Workspace
-Instance persistence whose save channel truthfully reports `saving` /
-`saved` / `failed`. The closure remediation was independently re-verified at
-`dda040a` — **VERIFIED WITH NON-BLOCKING ISSUES — FORMAL T1 CLOSURE
-PERMITTED**. No Method engine, real market data, broker integration, replay,
-backtest, simulated fills, signals, AI, or T2 functionality has begun; T2 is
-permitted but not started — see the
-[implementation report](docs/report/TRADING-OS-T1-PLATFORM-SHELL-IMPLEMENTATION.md),
-the [independent verification record](docs/report/TRADING-OS-T1-INDEPENDENT-VERIFICATION.md)
-(preserved byte-exactly), the
-[closure record](docs/report/TRADING-OS-T1-CLOSURE.md), and the
-[focused re-verification record](docs/report/TRADING-OS-T1-CLOSURE-REVERIFICATION.md).
+**T2 — Method System and Authoring Workspace: implemented, pending independent verification.**
+The Methods route now supports named lineages, persistent working drafts, reusable exact-revision
+capabilities, validation, immutable versions, revision, clone, semantic comparison and Workspace
+Profile selection. Definitions are available; evaluation begins in T3. See the
+[T2 architecture](docs/architecture/TRADING-OS-T2-METHOD-SYSTEM.md) and
+[T2 implementation report](docs/report/TRADING-OS-T2-METHOD-SYSTEM-IMPLEMENTATION.md).
+
+T1 remains independently verified and formally closed at
+`ad860465bf404b7bd1f4359c712f7f6bdf52a6d1`: the product-owned shell, public VICT navigation,
+fixture Markets chart, command palette and truthful Workspace Instance persistence remain.
+The [closure record](docs/report/TRADING-OS-T1-CLOSURE.md) and
+[focused re-verification](docs/report/TRADING-OS-T1-CLOSURE-REVERIFICATION.md) are preserved.
+T2 is not formally closed; no market evaluation, broker, backtest, replay, signals or AI exists.
 
 T0 remains the authoritative documentation stage; its records below are
 byte-identical to their audited revisions.
@@ -49,10 +44,10 @@ The full verification ladder: `npm run verify:registry && npm run format:check
 && npm run lint && npm run typecheck && npm run build && npm test && npm run
 verify:client-boundary && npm audit --omit=dev && git diff --check`, plus
 `npx playwright test` for browser/visual/accessibility evidence (screenshots
-land in `docs/evidence/`). Historical audit and verification records are
+land in gitignored `test-results/evidence/`; curated evidence is copied once to `docs/evidence/`). Historical audit and verification records are
 excluded from formatting (`.prettierignore`) and stay byte-identical to the
 revisions the auditors verified. Workspace Instance state persists in a SQLite
-database whose path is set with `TRADING_OS_DB_PATH` (never committed).
+database alongside Method and Workspace Profile records. Its path is set with `TRADING_OS_DB_PATH` (never committed).
 
 ## Relationship to VICT
 
@@ -86,7 +81,7 @@ one-way: VICT never depends on any Trading OS package.
 
 ## Current non-goals
 
-- No method engine, Method Versions, or method authoring (later stages).
+- No Method evaluation engine; T2 authors and preserves definitions only.
 - No broker selection or connection; no real trading; no autonomous execution.
 - No live-market data provider or market data ingestion (fixture data only,
   explicitly labelled `Fixture data — not live`).
