@@ -211,9 +211,10 @@ Implementation commits:
 - `04ebbbf851057e89e272122a9a6f9a1cf63970a7` — domain, catalog and transactional persistence.
 - `0b98203b095e777f622cad1b21e46be43dbac2ba` — authoring/version workspace and controller.
 - `784498d82441d726fc05d8b512746f17d22b74f0` — lifecycle/restart/browser/architecture evidence.
+- `bb8230e8c5e29520b386288362018bb2ef309639` — architecture, implementation report and curated screenshots.
 
 Final executable implementation SHA: `784498d82441d726fc05d8b512746f17d22b74f0`.
-The delivery commit following this SHA changes documentation and curated PNG evidence only.
+The delivery commits following this SHA change documentation and curated PNG evidence only.
 
 Authoritative checkout: all required ladder commands exit 0 after the diagnosed client-scan
 correction. Unit suite **159 passed, 16 files, 0 skipped**. Canonical Playwright: **40 passed,
@@ -243,9 +244,10 @@ stopped; no alternate deletion mechanism was used. Ignored databases, test outpu
 remain locally, as does the completed verification clone at
 `C:\Users\RZ1\AppData\Local\Temp\trading-os-t2-verify-42b0c74d4e36499b894731a1a95f9874`.
 No runtime database, temporary clone, dependency tree, test output or build output is staged
-or committed. Pre-existing local development/test databases were not touched. The user was
-asked whether delivery may proceed with these ignored files retained; the final response
-records the delivery disposition.
+or committed. Pre-existing local development/test databases were not touched. The user
+explicitly approved completing the fast-forward push with these ignored files retained
+(“yes complete it”). Cleanup is therefore an accepted local exception, not an outstanding
+delivery gate. The final response records the verified remote delivery SHA.
 
 Curated evidence: eight native lossless PNGs, CSS-pixel scale, **574,971 bytes total**.
 Desktop frames are 1440×900; mobile frames are 390×844. They use deterministic structural
