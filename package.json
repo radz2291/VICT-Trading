@@ -19,7 +19,7 @@
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
 		"lint": "eslint .",
-		"typecheck": "tsc -p packages/trading-domain && tsc -p packages/trading-data && npm run typecheck -w trading-os-app",
+		"typecheck": "tsc -p packages/trading-domain && tsc -p packages/trading-capabilities && tsc -p packages/trading-data && npm run typecheck -w trading-os-app",
 		"build": "npm run build -w trading-os-app",
 		"test": "vitest run",
 		"test:app": "vitest run --project app",
@@ -34,7 +34,8 @@
 		"dev": "npm run dev -w trading-os-app",
 		"preview": "npm run preview -w trading-os-app",
 		"audit": "npm audit --omit=dev",
-		"verify": "npm run verify:registry && npm run format:check && npm run lint && npm run typecheck && npm run build && npm test && npm run verify:client-boundary && npm audit --omit=dev"
+		"verify": "npm run verify:registry && npm run format:check && npm run lint && npm run typecheck && npm run build && npm test && npm run verify:client-boundary && npm audit --omit=dev",
+		"test:capabilities": "vitest run --project trading-capabilities"
 	},
 	"devDependencies": {
 		"@playwright/test": "1.63.0",

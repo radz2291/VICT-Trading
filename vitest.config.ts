@@ -12,6 +12,7 @@ export default defineConfig({
 		projects: [
 			'packages/trading-domain/vitest.config.ts',
 			'packages/trading-data/vitest.config.ts',
+			'packages/trading-capabilities/vitest.config.ts',
 			'packages/trading-surfaces/vitest.config.ts',
 			'apps/trading-os/vitest.config.ts',
 			{

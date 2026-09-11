@@ -5,14 +5,16 @@
 	"type": "module",
 	"description": "Trading OS market-data layer: deterministic seeded fixture bars implementing the trading-domain MarketDataPort. No live providers, no brokers, no persistence at T1.",
 	"exports": {
-		".": "./src/index.ts"
+		".": "./src/index.ts",
+		"./method-store": "./src/method-store.ts"
 	},
 	"scripts": {
 		"typecheck": "tsc -p tsconfig.json",
 		"test": "vitest run --project trading-data"
 	},
 	"dependencies": {
-		"@trading-os/trading-domain": "0.1.0"
+		"@trading-os/trading-domain": "0.1.0",
+		"@victframework/appdata-sqlite": "0.1.1"
 	},
 	"engines": {
 		"node": ">=22.13.0"

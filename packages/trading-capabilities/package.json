@@ -3,12 +3,15 @@
 	"version": "0.1.0",
 	"private": true,
 	"type": "module",
-	"description": "Trading OS governed capability boundaries (VICT capability packs) and the pure computation they orchestrate. Intentionally empty at T1 — first content arrives at T2. See README.md.",
+	"description": "Versioned definition-only capability authoring catalog. Evaluation begins in T3.",
 	"exports": {
 		".": "./src/index.ts"
 	},
 	"engines": {
 		"node": ">=22.13.0"
 	},
-	"license": "Apache-2.0"
+	"license": "Apache-2.0",
+	"dependencies": {
+		"@trading-os/trading-domain": "0.1.0"
+	}
 }

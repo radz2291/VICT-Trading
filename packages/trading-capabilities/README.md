@@ -1,18 +1,16 @@
 # @trading-os/trading-capabilities
 
-**Intentionally minimal at T1.**
+T2 provides an immutable, exact-revision capability **authoring catalog** using domain-owned
+metadata and bounded field contracts. It contains eight definition-only capabilities for
+analysis requirements, rules, judgment questions, risk requests and execution assumptions.
 
-This package is reserved for governed VICT capability boundaries (evaluation
-jobs, ingestion, evidence persistence) and the pure computation they
-orchestrate. Per the T0 architecture (Consumer-Fit Audit §6.1), governed
-capability boundaries wrap _jobs_, not calculations.
+`createCapabilityCatalog` validates and installs a complete catalog atomically;
+`createAuthoringCatalog` provides the T2 set. Compatible definitions require no Methods UI
+change. Tests prove multi-context range and daily mean-distance compositions without
+production seed records or strategy claims.
 
-T1 contains no method engine, no evaluation, no indicators, no ingestion
-jobs — so this package deliberately contains **no fake capabilities and no
-placeholder code**. It exists as a declared boundary so the dependency
-direction is already enforced by tests (nothing may import it yet; it may
-depend on `@trading-os/trading-domain` and `@victframework/sdk`/
-`@victframework/runtime` from T2 onward).
+No indicator, session, candle or rule evaluation exists. Pure calculations and governed VICT
+job boundaries belong to T3; jobs wrap work, not individual calculations. This package owns
+neither Method lineage nor persistence and depends only on `@trading-os/trading-domain`.
 
-First real content: Stage T2 (capability packs: indicators, sessions,
-detectors — pure product-local computation inside governed boundaries).
+See [T2 architecture](../../docs/architecture/TRADING-OS-T2-METHOD-SYSTEM.md).
