@@ -6,7 +6,10 @@ import type { RequestHandler } from './$types';
 // crosses the server-side authorization/effect boundary here; local actions
 // never reach this endpoint at all.
 export const POST: RequestHandler = async ({ request, url }) => {
-	if (request.headers.get('origin') && request.headers.get('origin') !== url.origin) {
+	if (
+		request.headers.get('sec-fetch-site') === 'cross-site' ||
+		(request.headers.get('origin') && request.headers.get('origin') !== url.origin)
+	) {
 		return json(
 			{ ok: false, code: 'DENIED', message: 'This action is not permitted.' },
 			{ status: 403 }
@@ -14,8 +17,23 @@ export const POST: RequestHandler = async ({ request, url }) => {
 	}
 	let body: { actionId?: unknown; input?: unknown };
 	try {
-		const raw = await request.text();
-		if (raw.length > 300000) throw new Error('Request limit');
+		if (Number(request.headers.get('content-length')) > 300000) throw new Error('Request limit');
+		const reader = request.body?.getReader();
+		if (!reader) throw new Error('Missing body');
+		const decoder = new TextDecoder();
+		let raw = '',
+			size = 0;
+		for (;;) {
+			const { done, value } = await reader.read();
+			if (done) break;
+			size += value.byteLength;
+			if (size > 300000) {
+				await reader.cancel();
+				throw new Error('Request limit');
+			}
+			raw += decoder.decode(value, { stream: true });
+		}
+		raw += decoder.decode();
 		body = JSON.parse(raw) as { actionId?: unknown; input?: unknown };
 	} catch {
 		return json(

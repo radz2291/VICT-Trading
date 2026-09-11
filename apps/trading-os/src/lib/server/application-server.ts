@@ -17,6 +17,13 @@ import {
 import { createAuthoringCatalog } from '@trading-os/trading-capabilities';
 import { createMethodService, parseMethodCommand } from '@trading-os/trading-domain';
 import { METHOD_ACTION_OPS } from '$lib/application/method-actions';
+import { EVALUATION_ACTION_OPS } from '$lib/application/evaluation-actions';
+import { parseEvaluationCommand } from '@trading-os/trading-domain';
+import {
+	createSqliteEvaluationRepository,
+	EVALUATION_MIGRATIONS
+} from '@trading-os/trading-data/evaluation-store';
+import { createEvaluationService } from './evaluation-service';
 import type { ApplicationDataAdapter, ActionResult } from '@victframework/application';
 import {
 	compileAppPlan,
@@ -33,7 +40,15 @@ import {
 const DEFAULT_DB_PATH = join('.data', 'trading-os.sqlite');
 
 /** The authorization profile of this deployment (server-side only). */
-const GRANTS = ['workspace.read', 'workspace.write', 'method.read', 'method.write'];
+const GRANTS = [
+	'workspace.read',
+	'workspace.write',
+	'method.read',
+	'method.write',
+	'market.read',
+	'market.write',
+	'evaluation.write'
+];
 
 /** The single trader-owned Workspace Instance identity for T1. */
 export const DEFAULT_WORKSPACE_ID = 'default';
@@ -45,7 +60,11 @@ export function createAppServer() {
 	const dbPath = process.env.TRADING_OS_DB_PATH ?? DEFAULT_DB_PATH;
 	// Ensure the database directory exists (the adapter never creates parents).
 	mkdirSync(join(dbPath, '..'), { recursive: true });
-	const migrations = [migrationsFromResources([workspaceResource], 1), ...METHOD_MIGRATIONS];
+	const migrations = [
+		migrationsFromResources([workspaceResource], 1),
+		...METHOD_MIGRATIONS,
+		...EVALUATION_MIGRATIONS
+	];
 	const data: ApplicationDataAdapter = createSqliteApplicationData({
 		path: dbPath,
 		resources: [workspaceResource],
@@ -54,6 +73,13 @@ export function createAppServer() {
 	});
 	const methods = createSqliteMethodRepository(dbPath, migrations);
 	const methodService = createMethodService(methods, createAuthoringCatalog());
+	const evaluationRepository = createSqliteEvaluationRepository(dbPath, migrations);
+	const evaluationService = createEvaluationService(
+		evaluationRepository,
+		methods,
+		createAuthoringCatalog(),
+		{ grants: GRANTS }
+	);
 
 	async function readWorkspaceRecord(): Promise<
 		| { readonly ok: true; readonly instance: WorkspaceInstance }
@@ -154,6 +180,23 @@ export function createAppServer() {
 			return { ok: false, code: 'UNKNOWN_ACTION', message: 'The action is not declared.' };
 		}
 		try {
+			if (Object.hasOwn(EVALUATION_ACTION_OPS, actionId)) {
+				let command;
+				try {
+					command = parseEvaluationCommand(input);
+				} catch {
+					return await evaluationService.execute(input);
+				}
+				const allowed: readonly string[] =
+					EVALUATION_ACTION_OPS[actionId as keyof typeof EVALUATION_ACTION_OPS];
+				if (!allowed.includes(command.op))
+					return {
+						ok: false,
+						code: 'INVALID_REQUEST',
+						message: 'The command does not match the declared action.'
+					};
+				return await evaluationService.execute(command);
+			}
 			if (Object.hasOwn(METHOD_ACTION_OPS, actionId)) {
 				const permission = action.kind === 'query' ? 'method.read' : 'method.write';
 				if (!GRANTS.includes(permission))
@@ -229,6 +272,8 @@ export function createAppServer() {
 		readWorkspace,
 		loadRoute,
 		async close(): Promise<void> {
+			await evaluationService.drain();
+			evaluationRepository.close();
 			methods.close();
 			(data as { close?: () => void }).close?.();
 		}

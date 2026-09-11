@@ -25,6 +25,7 @@ export interface MethodWorkspaceService {
 	readonly selectedVersion: MethodVersion | null;
 	readonly comparison: VersionComparison | null;
 	readonly profile: WorkspaceProfile | null;
+	readonly profileLabel?: string;
 	readonly profileState: 'loading' | 'ready' | 'failed';
 	readonly state: AuthoringState;
 	readonly message: string;

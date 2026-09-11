@@ -30,6 +30,12 @@ import {
 } from '@trading-os/trading-domain';
 import { TRADING_SURFACE_IDS } from '@trading-os/trading-surfaces';
 import {
+	evaluationActions,
+	evaluationCommandContract,
+	evaluationReplyContract,
+	EVALUATION_CAPABILITIES
+} from './evaluation-actions';
+import {
 	methodResource,
 	methodActions,
 	methodCommandContract,
@@ -118,7 +124,7 @@ const laterStage = (route: string, stage: string): string =>
 export const application = defineApplication({
 	schema: APPLICATION_DEFINITION_SCHEMA_V2,
 	id: 'trading.os',
-	revision: '2',
+	revision: '3',
 	name: 'Trading OS',
 	routes: [
 		// Top level (no group) — the two always-visible entries.
@@ -230,6 +236,12 @@ export const application = defineApplication({
 			breadcrumbs: [{ label: 'Desk', routeId: 'desk' }, { label: 'Markets' }],
 			layout: [
 				{
+					name: 'stored-data',
+					surfaces: [
+						{ role: 'component', id: 'cmp.data-catalog', ...TRADING_SURFACE_IDS.dataCatalog }
+					]
+				},
+				{
 					name: 'context',
 					surfaces: [
 						{
@@ -288,7 +300,7 @@ export const application = defineApplication({
 						{
 							role: 'status',
 							id: 'st.methods.scope',
-							value: 'Definition available · Evaluation begins in T3',
+							value: 'Immutable Methods · Deterministic evaluation',
 							tones: {}
 						},
 						{ role: 'component', id: 'cmp.methods', ...TRADING_SURFACE_IDS.methods }
@@ -527,6 +539,7 @@ export const application = defineApplication({
 		}
 	],
 	actions: [
+		...evaluationActions,
 		...methodActions,
 		{
 			kind: 'navigation',
@@ -567,6 +580,7 @@ export const application = defineApplication({
 		{ resourceId: methodResource.id, revision: '1' }
 	],
 	components: [
+		TRADING_SURFACE_IDS.dataCatalog,
 		TRADING_SURFACE_IDS.methods,
 		TRADING_SURFACE_IDS.deskOverview,
 		TRADING_SURFACE_IDS.workspaceControls,
@@ -619,10 +633,14 @@ export function compileAppPlan(): ApplicationPlan {
 		// The compiler consumes contract REGISTRY ENTRIES (identity only — the
 		// canonical compile boundary never receives executable parse
 		// functions); the data adapter binds the actual contract objects.
-		contracts: [workspaceRecordContract, methodCommandContract, methodReplyContract].map(
-			({ id, revision }) => ({ id, revision })
-		),
-		capabilities: [],
+		contracts: [
+			workspaceRecordContract,
+			methodCommandContract,
+			methodReplyContract,
+			evaluationCommandContract,
+			evaluationReplyContract
+		].map(({ id, revision }) => ({ id, revision })),
+		capabilities: EVALUATION_CAPABILITIES,
 		components: application.components ?? []
 	});
 	if (!result.ok) {

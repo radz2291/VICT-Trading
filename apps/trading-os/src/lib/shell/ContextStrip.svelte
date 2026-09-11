@@ -100,6 +100,10 @@
 
 <style>
 	.tos-strip {
+		position: sticky;
+		top: 0;
+		z-index: 50;
+		font-family: system-ui, sans-serif;
 		display: flex;
 		align-items: center;
 		gap: calc(var(--tos-unit) * 3);
@@ -196,6 +200,8 @@
 	}
 
 	.tos-strip__palette {
+		flex-shrink: 0;
+		white-space: nowrap;
 		margin-left: calc(var(--tos-unit) * 2);
 		background: var(--tos-bg);
 		color: var(--tos-text-muted);
@@ -217,7 +223,7 @@
 		outline-offset: 1px;
 	}
 
-	@media (max-width: 860px) {
+	@media (max-width: 1200px) {
 		.tos-strip__item--context {
 			display: none;
 		}
@@ -225,8 +231,19 @@
 
 	@media (max-width: 560px) {
 		.tos-strip {
+			flex-wrap: wrap;
+			height: auto;
+			min-height: 42px;
+			padding-block: 6px;
 			gap: calc(var(--tos-unit) * 2);
 			padding: 0 calc(var(--tos-unit) * 2);
+		}
+		.tos-strip__item--status {
+			font-size: 0.65rem;
+			white-space: normal;
+		}
+		.tos-strip__palette {
+			margin-left: 0;
 		}
 		.tos-strip__item--fixture {
 			display: none;

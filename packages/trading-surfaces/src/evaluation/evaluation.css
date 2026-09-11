@@ -1,0 +1,338 @@
+.ev {
+	color: var(--tos-text);
+	font-size: 0.85rem;
+	line-height: 1.5;
+	min-width: 0;
+	max-width: 100%;
+	padding: 18px;
+	background: var(--tos-surface);
+	border: 1px solid var(--tos-border);
+	border-radius: 8px;
+	overflow-wrap: anywhere;
+}
+.ev * {
+	box-sizing: border-box;
+	min-width: 0;
+}
+.ev h2 {
+	font-size: 1.3rem;
+	margin: 4px 0;
+}
+.ev h3 {
+	font-size: 1.02rem;
+	margin: 0 0 8px;
+}
+.ev h4 {
+	font-size: 0.9rem;
+	margin: 0 0 8px;
+}
+.ev p {
+	margin: 6px 0 12px;
+}
+.ev button,
+.ev select,
+.ev input {
+	font: inherit;
+	color: var(--tos-text);
+	background: var(--tos-bg);
+	border: 1px solid var(--tos-border);
+	border-radius: 5px;
+	padding: 8px 10px;
+	max-width: 100%;
+}
+.ev button {
+	cursor: pointer;
+	white-space: normal;
+}
+.ev button:hover {
+	border-color: var(--tos-accent);
+}
+.ev button:disabled {
+	opacity: 0.55;
+	cursor: not-allowed;
+}
+.ev :is(button, input, select, summary):focus-visible {
+	outline: 2px solid var(--tos-focus);
+	outline-offset: 2px;
+}
+.ev .ev-primary {
+	background: var(--tos-accent);
+	color: var(--tos-accent-contrast);
+	font-weight: 650;
+	border-color: var(--tos-accent);
+}
+.ev-heading {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 12px;
+	flex-wrap: wrap;
+}
+.ev-actions {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin: 8px 0;
+}
+.ev-eyebrow {
+	font-size: 0.65rem;
+	color: var(--tos-text-muted);
+	letter-spacing: 0.13em;
+}
+.ev-note,
+.ev small {
+	color: var(--tos-text-muted);
+	font-size: 0.76rem;
+}
+.ev-source,
+.ev-warning {
+	color: var(--tos-warning);
+}
+.ev-source {
+	padding: 8px 10px;
+	border-left: 2px solid var(--tos-warning);
+	background: var(--tos-bg);
+}
+.ev-warning button {
+	margin-left: 10px;
+}
+.ev-state,
+.ev-badge {
+	display: inline-block;
+	padding: 3px 8px;
+	border: 1px solid var(--tos-border);
+	border-radius: 4px;
+	font-size: 0.73rem;
+}
+.ev-state[data-state='true'],
+.ev-state[data-state='available'] {
+	color: var(--tos-success);
+}
+.ev-state[data-state='false'] {
+	color: var(--tos-text-muted);
+}
+.ev-state[data-state='unavailable'] {
+	color: var(--tos-warning);
+}
+.ev-empty {
+	padding: 20px;
+	background: var(--tos-bg);
+	border: 1px dashed var(--tos-border);
+	margin: 12px 0;
+}
+.ev-series-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+	gap: 12px;
+}
+.ev-series,
+.ev-output,
+.ev-config,
+.ev-results {
+	padding: 14px;
+	border: 1px solid var(--tos-border);
+	border-radius: 6px;
+	margin: 10px 0;
+}
+.ev-series p {
+	min-height: 36px;
+}
+.ev-details {
+	display: grid;
+	grid-template-columns: minmax(90px, 130px) minmax(0, 1fr);
+	gap: 4px 10px;
+}
+.ev-details dt {
+	color: var(--tos-text-muted);
+}
+.ev-details dd {
+	margin: 0;
+	font-variant-numeric: tabular-nums;
+}
+.ev-fingerprint {
+	font-family: var(--tos-font-mono);
+	font-size: 0.73rem;
+	overflow-wrap: anywhere;
+}
+.ev details {
+	padding: 8px 0;
+}
+.ev summary {
+	cursor: pointer;
+	color: var(--tos-text-muted);
+}
+.ev-field {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+}
+.ev-field label {
+	font-size: 0.77rem;
+	color: var(--tos-text-muted);
+}
+.ev-bindings,
+.ev-form-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
+	gap: 12px;
+	margin: 12px 0;
+}
+.ev-check {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin: 12px 0;
+	font-size: 0.78rem;
+}
+.ev-check input {
+	flex-shrink: 0;
+}
+.ev-status {
+	display: flex;
+	gap: 12px;
+	flex-wrap: wrap;
+	padding: 12px;
+	background: var(--tos-bg);
+	border-left: 2px solid var(--tos-info);
+	margin: 12px 0;
+}
+.ev-status[data-state='failed'],
+.ev-status[data-state='interrupted'] {
+	border-color: var(--tos-warning);
+}
+.ev-counts {
+	display: flex;
+	gap: 12px;
+	flex-wrap: wrap;
+}
+.ev-counts > div {
+	display: flex;
+	gap: 12px;
+	align-items: center;
+	background: var(--tos-bg);
+	padding: 10px 14px;
+	flex: 1;
+}
+.ev-counts strong {
+	font: 1.4rem var(--tos-font-mono);
+}
+.ev-inspect-controls {
+	display: flex;
+	align-items: end;
+	gap: 10px;
+	margin: 16px 0;
+	flex-wrap: wrap;
+}
+.ev-inspect-controls .ev-field {
+	flex: 1;
+	min-width: 220px;
+}
+.ev-output-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+	gap: 10px;
+}
+.ev-output {
+	background: var(--tos-bg);
+	margin: 0 0 10px;
+}
+.ev-declarations {
+	margin-top: 18px;
+	padding-top: 12px;
+	border-top: 1px solid var(--tos-border);
+}
+.ev-saved ul {
+	list-style: none;
+	padding: 0;
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+	gap: 8px;
+	max-height: 320px;
+	overflow: auto;
+}
+.ev-saved li button {
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+	width: 100%;
+	text-align: left;
+}
+.ev-chart {
+	margin-top: 16px;
+}
+.ev-run-details {
+	margin: 8px 0;
+}
+@media (max-width: 600px) {
+	.ev {
+		padding: 12px;
+	}
+	.ev-details {
+		grid-template-columns: 1fr;
+		gap: 2px;
+	}
+	.ev-details dd {
+		margin-bottom: 6px;
+	}
+	.ev-config,
+	.ev-results,
+	.ev-series {
+		padding: 10px;
+	}
+	.ev-inspect-controls .ev-field {
+		min-width: 100%;
+		order: -1;
+	}
+	.ev button {
+		min-height: 38px;
+	}
+	.ev-counts {
+		gap: 6px;
+	}
+	.ev-counts > div {
+		padding: 8px;
+		gap: 6px;
+	}
+	.ev select {
+		width: 100%;
+	}
+	.ev-heading > .ev-actions {
+		width: 100%;
+	}
+}
+.mw .ev button.ev-primary,
+.mw .ev button.ev-primary:hover:not(:disabled) {
+	background: var(--tos-accent);
+	color: var(--tos-accent-contrast);
+	border-color: var(--tos-accent);
+	font-weight: 650;
+}
+.mw .ev label.ev-check {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+.ev {
+	font-family: system-ui, sans-serif;
+}
+.ev-config,
+.ev-results,
+.ev-status,
+.ev [aria-label='Timestamp inspection'] {
+	scroll-margin-top: 110px;
+}
+@media (max-width: 600px) {
+	.ev-counts > div {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+	.ev-counts .ev-state {
+		white-space: nowrap;
+		padding: 2px 4px;
+		font-size: 0.65rem;
+	}
+	.ev-output .ev-details {
+		grid-template-columns: minmax(80px, 1fr) minmax(0, 1fr);
+	}
+}

@@ -16,6 +16,7 @@ import type {
 	WorkspaceInstanceState
 } from '@trading-os/trading-domain';
 import type { MethodWorkspaceService } from './methods/method-workspace.ts';
+import type { EvaluationWorkspaceService } from './evaluation/evaluation-workspace.ts';
 
 /** Re-exported presentation-safe domain vocabulary for surface authors. */
 export type { Instrument, Timeframe, WorkspaceLayoutPreset, WorkspaceInstanceState };
@@ -70,6 +71,7 @@ export interface BackgroundOperationsService {
 
 /** The full product-services bundle surfaces may consume. */
 export interface TradingServices {
+	readonly evaluation?: EvaluationWorkspaceService;
 	readonly methods?: MethodWorkspaceService;
 	readonly marketData: MarketDataPort;
 	readonly workspace: WorkspaceService;

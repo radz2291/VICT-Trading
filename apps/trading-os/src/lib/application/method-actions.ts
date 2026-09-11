@@ -7,7 +7,7 @@ import { defineContract } from '@victframework/contracts';
 import { parseMethodCommand, parseMethodReply } from '@trading-os/trading-domain';
 
 export const METHOD_ACTION_OPS = {
-	'act.methodRead': ['list', 'get', 'compare', 'profile', 'validate'],
+	'act.methodRead': ['list', 'get', 'version', 'compare', 'profile', 'validate'],
 	'act.methodCreate': ['create'],
 	'act.methodSave': ['save'],
 	'act.methodFreeze': ['freeze'],

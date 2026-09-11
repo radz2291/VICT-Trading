@@ -1,3 +1,4 @@
+import { EVALUATION_ACTION_OPS } from './evaluation-actions';
 import { describe, expect, it } from 'vitest';
 import { compileAppPlan, application, workspaceResource } from '$lib/application/definition';
 import { TRADING_SURFACE_IDS } from '@trading-os/trading-surfaces';
@@ -95,7 +96,7 @@ describe('the canonical Application Definition', () => {
 		}
 	});
 
-	it('preserves T1 actions and declares only the implemented T2 authoring actions', () => {
+	it('preserves T1 actions and declares the implemented T2 authoring and T3 evaluation actions', () => {
 		const plan = compileAppPlan();
 		expect(Object.keys(plan.actions).sort()).toEqual(
 			[
@@ -103,7 +104,8 @@ describe('the canonical Application Definition', () => {
 				'act.openMarkets',
 				'act.queryWorkspaces',
 				'act.saveWorkspace',
-				...Object.keys(METHOD_ACTION_OPS)
+				...Object.keys(METHOD_ACTION_OPS),
+				...Object.keys(EVALUATION_ACTION_OPS)
 			].sort()
 		);
 	});

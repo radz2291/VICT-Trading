@@ -12,7 +12,7 @@
 	 * validated at registration time — no global mutable singleton, no
 	 * renderer internals copied, no DOM/CSS hiding of VICT navigation.
 	 */
-	import { setContext } from 'svelte';
+	import { setContext, onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { goto, invalidateAll } from '$app/navigation';
 	import { VitApp } from '@victframework/renderer-svelte';
@@ -42,6 +42,10 @@
 	// svelte-ignore state_referenced_locally
 	const services = createAppServices(data.workspace);
 	setContext(TRADING_SERVICES_CONTEXT_KEY, services);
+	onMount(() => {
+		void services.evaluation?.load();
+		return () => services.evaluation?.dispose();
+	});
 
 	// The compiled plan: one source of truth for the renderer AND the
 	// command palette. Compilation is deterministic (stable application

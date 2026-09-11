@@ -12,6 +12,8 @@ import { browser } from '$app/environment';
 import { createAuthoringCatalog } from '@trading-os/trading-capabilities';
 import { createMethodClient } from './method-client';
 import { createMethodWorkspace } from './method-workspace.svelte';
+import { createEvaluationWorkspace } from './evaluation-workspace.svelte';
+import { createEvaluationClient } from './evaluation-client';
 import {
 	defaultWorkspaceInstance,
 	type Instrument,
@@ -220,7 +222,9 @@ const marketData = createFixtureMarketData();
  */
 export function createAppServices(initialWorkspace: WorkspaceInstance | null): TradingServices {
 	const workspace = createWorkspaceService(initialWorkspace ?? defaultWorkspaceInstance());
+	const evaluation = createEvaluationWorkspace(createEvaluationClient());
 	return {
+		evaluation,
 		marketData,
 		methods: createMethodWorkspace(
 			createMethodClient(),
@@ -229,7 +233,24 @@ export function createAppServices(initialWorkspace: WorkspaceInstance | null): T
 		),
 		workspace,
 		backgroundOperations: {
-			operations: []
+			get operations() {
+				return [
+					...(evaluation.installing
+						? [
+								{
+									id: 'fixture-install',
+									label: 'Installing deterministic fixture',
+									state: 'running' as const
+								}
+							]
+						: []),
+					...evaluation.activeRuns.map((run) => ({
+						id: run.id,
+						label: `${run.methodName} v${run.versionNumber} evaluation`,
+						state: 'running' as const
+					}))
+				];
+			}
 		}
 	};
 }

@@ -27,6 +27,18 @@ export function createMethodWorkspace(
 		comparison = $state<VersionComparison | null>(null);
 	let profile = $state<WorkspaceProfile | null>(null),
 		profileState = $state<'loading' | 'ready' | 'failed'>('loading');
+	let profileLabel = $state('');
+	async function resolveProfileLabel() {
+		profileLabel = '';
+		const id = profile?.methodVersionId;
+		if (!id) return;
+		const response = await client.execute({ op: 'version', versionId: id });
+		if (response.ok && response.value.kind === 'detail') {
+			const v = response.value.detail.versions.find((v) => v.id === id);
+			if (v) profileLabel = `${v.content.name} · Version ${v.number}`;
+		}
+		if (!profileLabel) profileLabel = 'Selected Method Version — label unavailable';
+	}
 	let state = $state<AuthoringState>('idle'),
 		message = $state(''),
 		dirty = $state(false),
@@ -58,7 +70,11 @@ export function createMethodWorkspace(
 		busy = false;
 		if (!result.ok) {
 			state = result.code === 'CONFLICT' ? 'conflict' : 'failed';
-			message = result.message;
+			message =
+				command.op === 'assign'
+					? 'Workspace Profile assignment was not confirmed. Reload the profile and retry the association.'
+					: result.message;
+			diagnostics = result.diagnostics;
 			recovery = content ? immutableCopy(content) : recovery;
 			return false;
 		}
@@ -66,6 +82,7 @@ export function createMethodWorkspace(
 		if (result.value.kind === 'detail') receive(result.value.detail);
 		else if (result.value.kind === 'profile') {
 			profile = result.value.profile;
+			await resolveProfileLabel();
 			profileState = 'ready';
 			state = dirty ? 'dirty' : 'saved';
 			message = 'Workspace Profile saved. Working context only — no active run.';
@@ -108,6 +125,7 @@ export function createMethodWorkspace(
 		busy = false;
 		if (context.ok && context.value.kind === 'profile') {
 			profile = context.value.profile;
+			await resolveProfileLabel();
 			profileState = 'ready';
 		} else profileState = 'failed';
 		if (library.ok && library.value.kind === 'library') {
@@ -164,6 +182,9 @@ export function createMethodWorkspace(
 		},
 		get profile() {
 			return profile;
+		},
+		get profileLabel() {
+			return profileLabel;
 		},
 		get profileState() {
 			return profileState;

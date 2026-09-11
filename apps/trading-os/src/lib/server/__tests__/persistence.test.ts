@@ -42,6 +42,30 @@ function workspaceUpdate(overrides: Partial<WorkspaceInstance['state']> = {}): W
 }
 
 describe('workspace persistence (SQLite application-data)', () => {
+	it('T3 refuses action/op substitution before any dataset installation', async () => {
+		const server = createAppServer();
+		try {
+			expect(
+				await server.dispatch('act.dataRead', {
+					op: 'install',
+					requestId: 'wrong-action',
+					fixtureRevision: '1'
+				})
+			).toMatchObject({ ok: false });
+			expect(await server.dispatch('act.fixtureInstall', { op: 'catalog' })).toMatchObject({
+				ok: false
+			});
+			expect(
+				await server.dispatch('act.evaluationStart', { op: 'get', runId: 'missing' })
+			).toMatchObject({ ok: false });
+			expect(await server.dispatch('act.dataRead', { op: 'catalog' })).toMatchObject({
+				ok: true,
+				value: { kind: 'catalog', series: [] }
+			});
+		} finally {
+			await server.close();
+		}
+	});
 	it('saves, closes the adapter, reopens, and restores the exact workspace', async () => {
 		const first = createAppServer();
 		const saved = first.plan; // touch plan to ensure compile ran

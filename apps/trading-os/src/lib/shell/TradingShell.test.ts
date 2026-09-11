@@ -175,6 +175,10 @@ describe('command palette', () => {
 });
 
 describe('workspace persistence truth in the shell', () => {
+	const workspaceCalls = () =>
+		fetchMock.mock.calls.filter(
+			([, init]) => JSON.parse(String((init as RequestInit)?.body)).actionId === 'act.saveWorkspace'
+		);
 	function afterEachCleanup(): void {
 		vi.useRealTimers();
 		document.body.innerHTML = '';
@@ -199,7 +203,7 @@ describe('workspace persistence truth in the shell', () => {
 		expect(shell.body.textContent).toContain('Saving…');
 		await vi.advanceTimersByTimeAsync(300);
 		// …and 'saved' once the request completes.
-		expect(fetchMock).toHaveBeenCalledTimes(1);
+		expect(workspaceCalls()).toHaveLength(1);
 		expect(shell.body.querySelector('[data-tos-save="saved"]')).not.toBeNull();
 		expect(shell.body.textContent).toContain('Workspace saved');
 		afterEachCleanup();
@@ -224,7 +228,7 @@ describe('workspace persistence truth in the shell', () => {
 		option!.dispatchEvent(new MouseEvent('click', { bubbles: true }));
 		flushSync();
 		await vi.advanceTimersByTimeAsync(300 + 500 + 1000);
-		expect(fetchMock).toHaveBeenCalledTimes(3);
+		expect(workspaceCalls()).toHaveLength(3);
 		expect(shell.body.querySelector('[data-tos-save="failed"]')).not.toBeNull();
 		expect(shell.body.textContent).toContain('Save failed — not persisted');
 		afterEachCleanup();
@@ -245,11 +249,11 @@ describe('workspace persistence truth in the shell', () => {
 		);
 		option!.dispatchEvent(new MouseEvent('click', { bubbles: true }));
 		flushSync();
-		expect(fetchMock).not.toHaveBeenCalled(); // inside the debounce window
+		expect(workspaceCalls()).toHaveLength(0); // inside the debounce window
 		window.dispatchEvent(new Event('pagehide'));
 		await vi.advanceTimersByTimeAsync(0);
-		expect(fetchMock).toHaveBeenCalledTimes(1);
-		expect((fetchMock.mock.calls[0]![1] as RequestInit).keepalive).toBe(true);
+		expect(workspaceCalls()).toHaveLength(1);
+		expect((workspaceCalls()[0]![1] as RequestInit).keepalive).toBe(true);
 		afterEachCleanup();
 		shell.unmount();
 	});
