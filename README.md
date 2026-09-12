@@ -16,17 +16,20 @@ generic dashboard, and not an autonomous trading bot.
 The Methods route supports named lineages, persistent working drafts, reusable exact-revision
 capabilities, validation, immutable versions, revision, clone, semantic comparison and
 Workspace Profile association (an append-only Workspace↔Method-Version reference — not yet a
-full presentation recommendation). The existing app provides Method definition/versioning
-only; evaluation begins in T3. The [T2 architecture](docs/architecture/TRADING-OS-T2-METHOD-SYSTEM.md),
+full presentation recommendation). The Method authoring lifecycle remains available alongside the T3 evaluation inspector. The [T2 architecture](docs/architecture/TRADING-OS-T2-METHOD-SYSTEM.md),
 [T2 implementation report](docs/report/TRADING-OS-T2-METHOD-SYSTEM-IMPLEMENTATION.md),
 [T2 independent verification](docs/report/TRADING-OS-T2-INDEPENDENT-VERIFICATION.md) (verdict:
 **VERIFIED WITH NON-BLOCKING ISSUES — FORMAL T2 CLOSURE PERMITTED**) and
 [T2 closure record](docs/report/TRADING-OS-T2-CLOSURE.md) are the authoritative references for
 the delivered method system.
 
-**T3 — Deterministic Market Data and Evaluation: permitted, not started.** No evaluation,
-historical data engine, backtest, replay, live data, broker, order submission, signals,
-performance evidence or AI has begun.
+**T3 — Deterministic Market Data and Evaluation: implemented — independent verification required.**
+Markets provides an explicitly installed, immutable fixture catalog. Methods provides exact-version
+bindings, bounded UTC evaluation, persisted run status and timestamp-level calculation/rule inspection.
+See [T3 architecture](docs/architecture/TRADING-OS-T3-DETERMINISTIC-EVALUATION.md) and
+[T3 implementation evidence](docs/report/TRADING-OS-T3-DATA-EVALUATION-IMPLEMENTATION.md).
+T3 is not independently verified or formally closed. No backtest, replay, opportunity, signal,
+fill, live data, broker, order or AI has begun.
 
 T1 remains independently verified and formally closed at
 `ad860465bf404b7bd1f4359c712f7f6bdf52a6d1`: the product-owned shell, public VICT navigation,
@@ -52,10 +55,46 @@ The full verification ladder: `npm run verify:registry && npm run format:check
 && npm run lint && npm run typecheck && npm run build && npm test && npm run
 verify:client-boundary && npm audit --omit=dev && git diff --check`, plus
 `npx playwright test` for browser/visual/accessibility evidence (screenshots
-land in gitignored `test-results/evidence/`; curated evidence is copied once to `docs/evidence/`). Historical audit and verification records are
+land in gitignored `test-results/t3/evidence/`; curated evidence is copied once to `docs/evidence/`). Historical audit and verification records are
 excluded from formatting (`.prettierignore`) and stay byte-identical to the
 revisions the auditors verified. Workspace Instance state persists in a SQLite
-database alongside Method and Workspace Profile records. Its path is set with `TRADING_OS_DB_PATH` (never committed).
+database alongside Method, Workspace Profile, immutable series and evaluation records. Its path is set with `TRADING_OS_DB_PATH` (never committed).
+
+## Hands-on T3 trial
+
+1. Open **Markets → Install deterministic fixture**. Inspect coverage, source revisions and the
+   deliberately gapped EXAMPLE-A series. The older shell preview chart remains separate from stored data.
+2. Open **Methods → New Method** and name it “Daily mean study”. Choose **Add context** and set label “Daily context”, instrument `EXAMPLE-B`, timeframe `1D`.
+   The editor creates its stable ID and bars data type.
+3. Add **Mean reference** (`analysis.mean@1`), context “Daily context”, lookback `30`,
+   price `close`. Add **Mean distance** (`rule.mean-distance@1`), context “Daily context”,
+   source the preceding Mean reference, side `below`, distance percent `2`. Use rule policy `all`.
+4. Save and validate, then freeze the valid draft. Open **Version history → Evaluate / Inspect**.
+5. Bind Daily context to EXAMPLE-B 1D. Keep Daily context as the explicit driver. Select
+   **Use last 96 intervals**, read the calculation semantics, accept `closed-bars-v1`, and start.
+6. Inspect the 96 timestamps, combined state counts, calculation values and **Exact run inputs
+   and revisions**. Select a timestamp and show its driver chart. A true rule is an evaluation
+   state only. The fixture's last 96 daily frames produce 41 true / 55 false / 0 unavailable
+   for exactly this configuration.
+7. Reload, open **Evaluation inspector → Saved evaluations**, and reopen the result. Start the
+   same configuration with a new request to compare its unchanged result fingerprint. Restarting
+   the application with the same database also preserves it.
+8. To inspect warm-up, use `2025-01-07T00:00` through `2025-01-10T00:00` UTC. To try multiple
+   timeframes, author EXAMPLE-A `1W` and `15m` observations, a weekly 26-bar Range reference,
+   and a lower-context Range relation referencing it. Choose the lower observation as driver.
+   Bind its gapped variant and inspect `2025-09-13T01:00` through `2025-09-13T03:00` UTC for
+   missing-data diagnostics. No example Method is automatically inserted.
+
+Limits are explicit: 512 frames, 366-day range, 12,000 loaded bars per unique series,
+120,000 total input bars, 4 MB canonical result and a 12 MB bounded HTTP reply. Choose a shorter
+range when rejected. An uncertain request must be reconciled with **Retry** using the same ID.
+After process loss, interrupted runs remain visible and require a deliberate new evaluation.
+The local single-owner application has a fixed server grant profile; it is not a multi-user deployment.
+
+The verification ladder also includes `npm audit`, `npm run verify:client-negative`, and
+`npm run verify:t3-probe` (local computational measurements only). Browser tests use installed
+Chrome and the production build; finalized screenshots under `docs/evidence/t3/` are never
+written by routine tests.
 
 ## Relationship to VICT
 
@@ -89,11 +128,10 @@ one-way: VICT never depends on any Trading OS package.
 
 ## Current non-goals
 
-- No Method evaluation engine; T2 authors and preserves definitions only.
+- No trading-performance calculations or claims; T3 reports calculation and rule states.
 - No broker selection or connection; no real trading; no autonomous execution.
-- No live-market data provider or market data ingestion (fixture data only,
-  explicitly labelled `Fixture data — not live`).
-- No SS Breakout implementation; no indicators or strategy logic.
+- No live-market provider or external import; only explicit deterministic fixture ingestion.
+- No SS Breakout implementation or strategy-specific application logic.
 - No backtest, replay, Live Watch, or trading activity (routes exist and show
   honest, intentional safe states).
 - No modification of the VICT framework or registry.

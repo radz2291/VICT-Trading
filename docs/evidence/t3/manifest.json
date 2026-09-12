@@ -1,0 +1,89 @@
+{
+	"captureCommit": "48863e8457adf924f95418b9e3c9f3eae3edea5d",
+	"productionCodeCommit": "e17034b88d21fcf469f2cb09847f897bb32f7e1b",
+	"browser": "installed Google Chrome via Playwright channel chrome",
+	"imageProcessing": "lossless PNG compression only; RGBA pixels compared equal",
+	"images": [
+		{
+			"file": "desktop-catalog.png",
+			"width": 1440,
+			"height": 900,
+			"bytes": 94713,
+			"sha256": "3f1683bcd18d2e1416a9f3f4162f808c4078eac96a4f0b3ebcecd822667d180f"
+		},
+		{
+			"file": "desktop-configuration.png",
+			"width": 1440,
+			"height": 900,
+			"bytes": 60006,
+			"sha256": "f43299b0d1abfd70180a4817b73459a8b8b3c51d85e31ddd60e66fe21f934879"
+		},
+		{
+			"file": "desktop-completed.png",
+			"width": 1440,
+			"height": 900,
+			"bytes": 55113,
+			"sha256": "ec2d1fc555e00dc37c36c09b06b625c1879885ff9d6914656d953e04fb064bc1"
+		},
+		{
+			"file": "desktop-timestamp.png",
+			"width": 1440,
+			"height": 900,
+			"bytes": 49948,
+			"sha256": "428d8021f8dd2216a5fb71552fed848e1c812234a7277e45f98da1b0e7eddefd"
+		},
+		{
+			"file": "desktop-unavailable.png",
+			"width": 1440,
+			"height": 900,
+			"bytes": 60381,
+			"sha256": "b6c0e1b3d6873f5ef139e7d019b8facf036b974d9ba833d07f92b882f155150d"
+		},
+		{
+			"file": "laptop-completed.png",
+			"width": 1024,
+			"height": 768,
+			"bytes": 44118,
+			"sha256": "24aca6c2e2c56db0061800fd3d7b2b09dc3b57fd68cc427d64a28aad1a3519ff"
+		},
+		{
+			"file": "mobile-configuration.png",
+			"width": 390,
+			"height": 844,
+			"bytes": 35303,
+			"sha256": "eacf402368e74b205d223ede5ed5f9ce318e7ec75a66d964d22c5cf539d81200"
+		},
+		{
+			"file": "mobile-completed.png",
+			"width": 390,
+			"height": 844,
+			"bytes": 36111,
+			"sha256": "bd0ba83c61200153a21664309c8ec266bebe28d26a6a49c93c7dc05b741b7c18"
+		}
+	],
+	"axeVersion": "4.10.2",
+	"axeTags": ["wcag2a", "wcag2aa", "wcag21aa"],
+	"exactViolations": {
+		"desktop-catalog-axe": [],
+		"desktop-completed-axe": [],
+		"desktop-configuration-axe": [],
+		"desktop-failed-axe": [],
+		"desktop-keyboard-axe": [],
+		"desktop-prerequisite-axe": [],
+		"desktop-unavailable-axe": [],
+		"laptop-catalog-axe": [],
+		"laptop-completed-axe": [],
+		"laptop-configuration-axe": [],
+		"laptop-failed-axe": [],
+		"laptop-keyboard-axe": [],
+		"laptop-prerequisite-axe": [],
+		"laptop-unavailable-axe": [],
+		"mobile-catalog-axe": [],
+		"mobile-completed-axe": [],
+		"mobile-configuration-axe": [],
+		"mobile-failed-axe": [],
+		"mobile-keyboard-axe": [],
+		"mobile-prerequisite-axe": [],
+		"mobile-unavailable-axe": []
+	}
+}

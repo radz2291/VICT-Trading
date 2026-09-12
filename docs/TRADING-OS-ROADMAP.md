@@ -207,7 +207,7 @@ or implemented). A fuller representation requires an explicit new schema/revisio
 migration with compatibility and presentation-recommendation semantics specified first, and
 is a mandatory gate before T4 implementation begins — or earlier if T3 introduces any
 profile-driven workspace behavior. **`MethodContent@1` is accepted, as independently
-verified, as the T3 foundation without redesign.** T3 has not begun.
+verified, as the T3 foundation without redesign.** T3 implementation status is recorded below.
 
 **Purpose.** Make methods first-class, versioned, and composable.
 
@@ -238,9 +238,14 @@ atomically with pinned revisions.
 
 ## T3 — Deterministic Market Data and Evaluation
 
-**Status: permitted — not started.** T2 is formally closed (see
-`docs/report/TRADING-OS-T2-CLOSURE.md`); `MethodContent@1` is the accepted foundation. No T3
-market data, evaluation, jobs, indicators, opportunities, or performance calculations exist.
+**Status: implemented — independent verification required.** T2 remains formally closed.
+The [T3 architecture](architecture/TRADING-OS-T3-DETERMINISTIC-EVALUATION.md) and
+[implementation report](report/TRADING-OS-T3-DATA-EVALUATION-IMPLEMENTATION.md) record the
+immutable stored fixture data, canonical evaluator, real public VICT coarse operations,
+persisted evaluation inspector, verification and limitations. T3 is not independently
+verified or formally closed; T4 has not begun. The full Workspace Profile schema remains
+mandatory before T4. AV-1/2/3/6/7 have implementation evidence; AV-4 remains a watch-item,
+AV-5 remains an association only, and renderer/npm obligations carry unchanged.
 
 **Purpose.** One canonical evaluation core over deterministic stored data.
 
@@ -254,8 +259,8 @@ per-candle framework persistence or authorization overhead) wrapped by
 coarse governed VICT capability job boundaries (start evaluation, ingest a
 bounded dataset, persist evidence), identity-pinned (method version +
 calculation revisions + governed capability revisions in the run identity).
-Performance calculation capabilities. No performance claims without
-measurement.
+Computational measurements only. Trading-performance calculations and claims remain
+excluded until later stages have opportunities, fills and evidence.
 
 **Exclusions.** No live provider, no broker, no interactive sessions yet.
 
